@@ -4,7 +4,7 @@ A Web-Based Puzzle–Strategy–Narrative–Adventure Game featuring 13-agent or
 
 ## Comprehensive Project Description
 
-Thirteen Oracles of Astraeum is a production-ready AI-powered strategy game implementing event-driven microservices architecture with intelligent agent coordination. The system deploys 13 isolated oracle agents, each executing unique behavioral patterns through local LLM inference (Llama 3/Mistral via Ollama), coordinated by a LangGraph orchestrator.
+Thirteen Oracles of Astraeum is an AI-powered strategy game implementing event-driven microservices architecture with intelligent agent coordination. The system deploys 13 isolated oracle agents, each executing unique behavioral patterns through local LLM inference (Llama 3/Mistral via Ollama), coordinated by a LangGraph orchestrator.
 
 ## Links
 
