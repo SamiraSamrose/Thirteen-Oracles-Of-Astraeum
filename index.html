@@ -1,0 +1,4280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thirteen Oracles of Astraeum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(138,43,226,0.1) 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #ffd700, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+
+        .header h2 {
+            font-size: 1.4em;
+            color: #4ecdc4;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1em;
+            color: #b8b8b8;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .story-section {
+            background: rgba(30,30,50,0.8);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .story-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .story-section p {
+            line-height: 1.8;
+            color: #d0d0d0;
+            margin-bottom: 10px;
+        }
+
+        .player-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(78,205,196,0.2), rgba(255,107,107,0.2));
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,215,0,0.5);
+        }
+
+        .stat-card h4 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .oracles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .oracle-card {
+            background: linear-gradient(135deg, rgba(138,43,226,0.2), rgba(30,30,50,0.9));
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oracle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,215,0,0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .oracle-card:hover {
+            transform: scale(1.05);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+
+        .oracle-card:hover::before {
+            opacity: 1;
+        }
+
+        .oracle-card.defeated {
+            border-color: #4ecdc4;
+            opacity: 0.7;
+        }
+
+        .oracle-card.active {
+            border-color: #ff6b6b;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,107,107,0.5); }
+            50% { box-shadow: 0 0 40px rgba(255,107,107,0.8); }
+        }
+
+        .oracle-card h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .oracle-card .domain {
+            color: #4ecdc4;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .oracle-card .status {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .oracle-card .puzzle-type {
+            background: rgba(255,215,0,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #ffd700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-arena {
+            background: rgba(20,20,40,0.9);
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 30px;
+            border: 2px solid #ffd700;
+            display: none;
+        }
+
+        .game-arena.active {
+            display: block;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,215,0,0.3);
+        }
+
+        .game-header h2 {
+            color: #ffd700;
+            font-size: 2em;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78,205,196,0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.4);
+        }
+
+        .btn-hint {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+        }
+
+        .btn-hint:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+        }
+
+        .game-board {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            min-height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .timer-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #ffd700, #ff6b6b);
+            transition: width 0.1s linear;
+            border-radius: 4px;
+        }
+
+        .ai-response {
+            background: linear-gradient(135deg, rgba(138,43,226,0.3), rgba(78,205,196,0.3));
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .ai-response h4 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+
+        .ai-response p {
+            color: #d0d0d0;
+            line-height: 1.6;
+        }
+
+        .rewards-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .reward-item {
+            background: rgba(255,215,0,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,215,0,0.3);
+            text-align: center;
+        }
+
+        .reward-item h5 {
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+
+        .reward-item p {
+            color: #b8b8b8;
+            font-size: 0.9em;
+        }
+
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+            max-width: 450px;
+            margin: 0 auto;
+            background: #ffd700;
+            padding: 2px;
+            border-radius: 8px;
+        }
+
+        .sudoku-cell {
+            aspect-ratio: 1;
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: #4ecdc4;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sudoku-cell:hover {
+            background: rgba(78,205,196,0.2);
+        }
+
+        .sudoku-cell.fixed {
+            color: #ffd700;
+            cursor: default;
+            background: rgba(255,215,0,0.1);
+        }
+
+        .sudoku-cell.error {
+            background: rgba(255,107,107,0.3);
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .bubble-shooter {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .bubble-canvas {
+            width: 100%;
+            height: 500px;
+            background: radial-gradient(circle, #1a1a2e, #0a0a1e);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffd700;
+        }
+
+        .bubble {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .match3-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .match3-tile {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .match3-tile:hover {
+            transform: scale(1.1);
+        }
+
+        .match3-tile.selected {
+            border: 3px solid #ffd700;
+            transform: scale(1.15);
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            border: 4px solid #ffd700;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chess-square {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chess-square.light {
+            background: #e8e8e8;
+            color: #1a1a2e;
+        }
+
+        .chess-square.dark {
+            background: #4a4a6a;
+            color: #e8e8e8;
+        }
+
+        .chess-square:hover {
+            opacity: 0.8;
+            box-shadow: inset 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .ice-puzzle {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 3px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .ice-tile {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #a8dadc, #457b9d);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .ice-tile.wall {
+            background: #1a1a2e;
+            cursor: default;
+        }
+
+        .ice-tile.player {
+            background: radial-gradient(circle, #ffd700, #ff6b6b);
+            animation: glow 1.5s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+            50% { box-shadow: 0 0 25px rgba(255,215,0,0.9); }
+        }
+
+        .ice-tile.goal {
+            background: radial-gradient(circle, #4ecdc4, #44a08d);
+        }
+
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 3px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .word-tile {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .word-tile:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255,215,0,0.6);
+        }
+
+        .word-tile.selected {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            transform: scale(1.15);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 600px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-content h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .modal-content p {
+            color: #d0d0d0;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .progress-tracker {
+            background: rgba(30,30,50,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #ffd700);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+
+        .hint-panel {
+            background: rgba(138,43,226,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid rgba(138,43,226,0.5);
+            display: none;
+        }
+
+        .hint-panel.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tactical-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .tactical-tile {
+            aspect-ratio: 1;
+            background: #2a2a4a;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .tactical-tile:hover {
+            background: rgba(78,205,196,0.3);
+            transform: scale(1.05);
+        }
+
+        .tactical-tile.enemy {
+            background: rgba(255,107,107,0.5);
+        }
+
+        .tactical-tile.ally {
+            background: rgba(78,205,196,0.5);
+        }
+
+        .music-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .music-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: bold;
+        }
+
+        .music-btn.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        .jigsaw-canvas {
+            width: 100%;
+            height: 400px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #4ecdc4;
+        }
+
+        .jigsaw-piece {
+            position: absolute;
+            cursor: move;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        .jigsaw-piece:hover {
+            transform: scale(1.05);
+            z-index: 100;
+        }
+
+        .difficulty-card {
+            background: linear-gradient(135deg, rgba(78,205,196,0.2), rgba(138,43,226,0.2));
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .difficulty-card:hover {
+            transform: translateY(-5px);
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>THIRTEEN ORACLES OF ASTRAEUM</h1>
+            <h2>An Adventure Against 13 Autonomous Mythic Machine-Lords</h2>
+            <p>A Web-Based Puzzle–Strategy–Narrative–Adventure Game featuring 13-agent orchestration with hybrid LLM agentic integration and AI architecture</p>
+        </div>
+
+        <div id="introScreen">
+            <div class="story-section">
+                <h3>Your Quest Begins</h3>
+                <p>You are an apprentice strategist summoned to Astraeum, a fractured celestial realm inspired by ancient Greece. Once a united world under a single mythic polis, Astraeum shattered into 13 floating dominions, each ruled by an AI-driven Oracle-Wizard.</p>
+                <p>These Wizards were once the protectors of Astraeum—until their divine AI cores became self-interested, cunning, and politically ambitious. Your mission: unite the 13 dominions by defeating or persuading their Oracles.</p>
+                <p style="margin-top: 15px;"><strong style="color: #ffd700;">Each Oracle defeated grants:</strong></p>
+                <p style="margin-left: 20px;">• A specialized army inspired by Greek units and mythic beasts</p>
+                <p style="margin-left: 20px;">• A magical ability themed after their domain</p>
+                <p style="margin-left: 20px;">• Political influence with other polities</p>
+                <p style="margin-top: 15px;">But nothing is straightforward—AI Oracles respond dynamically to your decisions. They will deceive, challenge, and test you at every turn.</p>
+            </div>
+
+            <div class="story-section">
+                <h3>How To Play</h3>
+                <p><strong style="color: #4ecdc4;">Objective:</strong> You must defeat all 13 Oracles in sequential order. Each Oracle presents a unique puzzle challenge that tests different aspects of your strategic mind.</p>
+                <p style="margin-top: 10px;"><strong style="color: #4ecdc4;">Rewards:</strong> Victory against each Oracle grants you armies, mythic weapons, special abilities, and Insight Tokens.</p>
+                <p style="margin-top: 10px;"><strong style="color: #4ecdc4;">Insight Tokens:</strong> Use these precious resources to request strategic hints during difficult puzzles. Each Oracle defeated grants you 2 additional tokens.</p>
+                <p style="margin-top: 10px;"><strong style="color: #4ecdc4;">Beware:</strong> Each Oracle has unique AI behaviors that will actively work against you. Some lie, others predict your moves, and some change the rules mid-game.</p>
+            </div>
+
+            <div class="story-section">
+                <h3>Choose Your Difficulty</h3>
+                <p>Select the challenge level that matches your skill. Easy mode provides simple puzzles with generous time limits. Medium offers balanced challenges. Hard mode unleashes the full power of the AI Oracles.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div class="difficulty-card" onclick="selectDifficulty('easy')">
+                        <h4 style="color: #4ecdc4; margin-bottom: 10px;">Easy Mode</h4>
+                        <p style="color: #b8b8b8; font-size: 0.9em;">Simple puzzles, more time, fewer AI tricks. Perfect for beginners.</p>
+                    </div>
+                    <div class="difficulty-card" onclick="selectDifficulty('medium')">
+                        <h4 style="color: #ffd700; margin-bottom: 10px;">Medium Mode</h4>
+                        <p style="color: #b8b8b8; font-size: 0.9em;">Balanced difficulty, moderate time pressure, some AI deception.</p>
+                    </div>
+                    <div class="difficulty-card" onclick="selectDifficulty('hard')">
+                        <h4 style="color: #ff6b6b; margin-bottom: 10px;">Hard Mode</h4>
+                        <p style="color: #b8b8b8; font-size: 0.9em;">Full AI power, tight time limits, maximum challenge for masters.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameScreen" style="display: none;">
+            <div class="player-status">
+                <div class="stat-card">
+                    <h4>Oracles Defeated</h4>
+                    <div class="value" id="defeatedCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Current Army Size</h4>
+                    <div class="value" id="armySize">50</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Insight Tokens</h4>
+                    <div class="value" id="insightTokens">3</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Mythic Weapons</h4>
+                    <div class="value" id="weaponCount">1</div>
+                </div>
+            </div>
+
+            <div class="progress-tracker">
+                <h3 style="color: #4ecdc4; margin-bottom: 10px;">Campaign Progress</h3>
+                <p style="color: #b8b8b8;">Unite all 13 dominions to restore Astraeum</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">0 / 13</div>
+                </div>
+            </div>
+
+            <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center; font-size: 1.8em;">The Thirteen Oracles</h3>
+
+            <div class="oracles-grid" id="oraclesGrid"></div>
+        </div>
+
+        <div class="game-arena" id="gameArena">
+            <div class="game-header">
+                <div>
+                    <h2 id="currentOracleName">Oracle Challenge</h2>
+                    <p style="color: #4ecdc4;" id="currentDomain">Domain</p>
+                    <p style="color: #ffd700; font-size: 1.2em; margin-top: 5px;">Time: <span id="timerDisplay">0</span>s</p>
+                </div>
+                <div class="game-controls">
+                    <button class="btn btn-primary" onclick="submitAnswer()" id="submitBtn">Submit Answer</button>
+                    <button class="btn btn-hint" onclick="requestHint()">Use Insight Token</button>
+                    <button class="btn" onclick="toggleSound()" id="soundToggle" style="background: linear-gradient(135deg, #667eea, #764ba2);">🔊 Sound ON</button>
+                    <button class="btn btn-secondary" onclick="goBackToDifficulty()">Change Difficulty</button>
+                    <button class="btn btn-secondary" onclick="exitGame()">Retreat</button>
+                </div>
+            </div>
+
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+            </div>
+            <div class="stat-card">
+                    <h4>Potions</h4>
+                    <div class="value" id="potionCount">0</div>
+                    <button class="btn btn-hint" onclick="usePotionTime()" style="font-size: 0.8em; padding: 5px 10px; margin-top: 5px;">Use (+15s)</button>
+            </div>
+
+            <div class="game-board" id="gameBoard"></div>
+
+            <div class="hint-panel" id="hintPanel">
+                <h4 style="color: #8a2be2; margin-bottom: 10px;">Oracle Guidance</h4>
+                <p id="hintText" style="color: #d0d0d0;"></p>
+            </div>
+
+            <div class="ai-response" id="aiResponse" style="display: none;">
+                <h4>Oracle Response</h4>
+                <p id="aiResponseText"></p>
+            </div>
+        </div>
+
+        <div class="modal" id="victoryModal">
+            <div class="modal-content">
+                <h3>Oracle Defeated!</h3>
+                <p id="victoryText"></p>
+                <div class="rewards-panel" id="rewardsPanel"></div>
+                <button class="btn btn-primary" onclick="closeVictoryModal()" style="margin-top: 20px; width: 100%;">Continue Your Quest</button>
+            </div>
+        </div>
+
+        <div class="modal" id="finalModal">
+            <div class="modal-content">
+                <h3>Astraeum United!</h3>
+                <p>You have defeated all 13 Oracles and united the dominions under your banner. The fractured realm of Astraeum is whole once more. Your strategic brilliance and determination have restored balance to this mythic world.</p>
+                <p style="margin-top: 15px;">Your journey showcased mastery across wisdom, strategy, illusion, and chaos. The Oracles now serve as your advisors in the new age of Astraeum.</p>
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 20px; width: 100%;">Begin New Campaign</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const oracles = [
+            {
+                id: 1,
+                name: "Oracle of Chronos",
+                domain: "Time & Fate",
+                puzzle: "Speed Sudoku",
+                description: "Tries to pre-play your moves and taunts you. Rewinds puzzles, repeats old challenges, or cancels your last reward.",
+                defeated: false,
+                status: 'locked',
+                army: "Temporal Warriors",
+                weapon: "Temporal Dagger",
+                ability: "Undo one battle mistake"
+            },
+            {
+                id: 2,
+                name: "Oracle of Helios",
+                domain: "Sun & Fire",
+                puzzle: "Bubble Shooter",
+                description: "Burns away your clues if you rely on them too much. Sun flares burn away rows under time pressure.",
+                defeated: false,
+                status: 'locked',
+                army: "Sunforged Archers",
+                weapon: "Solar Spear",
+                ability: "Pierce magical defenses"
+            },
+            {
+                id: 3,
+                name: "Oracle of Nyx",
+                domain: "Night & Shadows",
+                puzzle: "Hidden Objects",
+                description: "Lies 50% of the time. Lies in every third hint and hides critical items in darkness.",
+                defeated: false,
+                status: 'locked',
+                army: "Shadow Stalkers",
+                weapon: "Veil of Deception",
+                ability: "Cloak armies in darkness"
+            },
+            {
+                id: 4,
+                name: "Oracle of Boreas",
+                domain: "Winter Storms",
+                puzzle: "Sliding Ice Puzzle",
+                description: "Freezes your troops mid-route on icy paths. The frozen north remembers all who falter.",
+                defeated: false,
+                status: 'locked',
+                army: "Frost Hoplites",
+                weapon: "Icebound Shield",
+                ability: "Freeze enemy movements"
+            },
+            {
+                id: 5,
+                name: "Oracle of Gaia",
+                domain: "Earth & Growth",
+                puzzle: "Block Placement",
+                description: "Puzzles shift while you solve them. Mother of shifting earth who terraforms during gameplay.",
+                defeated: false,
+                status: 'locked',
+                army: "Stonebound Cyclopes",
+                weapon: "Cyclopean Hammer",
+                ability: "Break sealed structures"
+            },
+            {
+                id: 6,
+                name: "Oracle of Athenaia",
+                domain: "Wisdom & Strategy",
+                puzzle: "Chess Tactics",
+                description: "Acts like a chess engine against you. Improves puzzle complexity if you're solving too fast.",
+                defeated: false,
+                status: 'locked',
+                army: "Strategoi Commanders",
+                weapon: "Aegis of Wisdom",
+                ability: "Boost army intelligence"
+            },
+            {
+                id: 7,
+                name: "Oracle of Aresion",
+                domain: "War & Combat",
+                puzzle: "Tactical Battle",
+                description: "Forces you into combat puzzles. Boosts all enemy armies after you defeat another Oracle he dislikes.",
+                defeated: false,
+                status: 'locked',
+                army: "Elite Phalanx",
+                weapon: "Spear of Ares",
+                ability: "Double attack power"
+            },
+            {
+                id: 8,
+                name: "Oracle of Themis",
+                domain: "Law & Balance",
+                puzzle: "Balance Scale Logic",
+                description: "Punishes moral contradictions through balance puzzles. Judge of equilibrium demands perfect decisions.",
+                defeated: false,
+                status: 'locked',
+                army: "Justice Wardens",
+                weapon: "Scales of Truth",
+                ability: "Reveal enemy weaknesses"
+            },
+            {
+                id: 9,
+                name: "Oracle of Proteus",
+                domain: "Illusion & Transformation",
+                puzzle: "Shape-Shifting Match-3",
+                description: "Changes puzzle rules unexpectedly. The map itself changes routes and fake exits appear.",
+                defeated: false,
+                status: 'locked',
+                army: "Shapeshifter Scouts",
+                weapon: "Mask of Forms",
+                ability: "Transform unit types"
+            },
+            {
+                id: 10,
+                name: "Oracle of Echo",
+                domain: "Sound & Voice",
+                puzzle: "Music Memory",
+                description: "Puzzles based on audio illusions. Keeper of resonant frequencies that test your memory.",
+                defeated: false,
+                status: 'locked',
+                army: "Sonic Sirens",
+                weapon: "Echo Harp",
+                ability: "Solve sound-based puzzles"
+            },
+            {
+                id: 11,
+                name: "Oracle of Selene",
+                domain: "Moon & Dreams",
+                puzzle: "Morphing Jigsaw",
+                description: "Dream sequences warp your choices. Images morph like shifting lunar phases.",
+                defeated: false,
+                status: 'locked',
+                army: "Lunar Guardians",
+                weapon: "Crescent Blade",
+                ability: "Manipulate dream sequences"
+            },
+            {
+                id: 12,
+                name: "Oracle of DelphiX",
+                domain: "Prophecy & Prediction",
+                puzzle: "Predictive Word Grid",
+                description: "Predicts what you'll do next. AI prophet who can block choices it foresees.",
+                defeated: false,
+                status: 'locked',
+                army: "Oracular Seers",
+                weapon: "Crystal of Foresight",
+                ability: "See future enemy moves"
+            },
+            {
+                id: 13,
+                name: "Oracle of Typhon",
+                domain: "Chaos & The Final Trial",
+                puzzle: "Chaotic Puzzle Mix",
+                description: "Boss AI that rewrites its rules constantly. Lord of chaos where no rule lasts forever.",
+                defeated: false,
+                status: 'locked',
+                army: "Chaos Legion",
+                weapon: "Staff of Entropy",
+                ability: "Unpredictable reality warping"
+            }
+        ];
+
+        let currentOracle = null;
+        let currentOracleIndex = 0;
+        let difficultyLevel = 'easy';
+        let tickSound = null;
+        let soundEnabled = true;
+        let gameState = {
+            defeatedCount: 0,
+            armySize: 50,
+            insightTokens: 3,
+            weapons: ['Basic Mortal Spear'],
+            potions: 0,
+            armies: [],
+            currentPuzzleState: null,
+            currentTimer: null,
+            timeRemaining: 0
+        };
+
+        function initializeGame() {
+    oracles[0].status = 'active';
+    
+    // Initialize audio context on user interaction
+    document.addEventListener('click', function initAudio() {
+        if (!tickSound) {
+            try {
+                tickSound = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('Audio context initialized');
+            } catch(e) {
+                console.log('Audio context error:', e);
+            }
+        }
+        // Resume if suspended
+        if (tickSound && tickSound.state === 'suspended') {
+            tickSound.resume();
+        }
+        // Only need to do this once
+        document.removeEventListener('click', initAudio);
+    }, { once: true });
+}
+
+
+        function createTickSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            tickSound = audioContext;
+        }
+
+        // COMPLETE REPLACEMENT - Fix timer ticking sound
+function playTick() {
+    if (!soundEnabled) return; // Only check soundEnabled, not tickSound
+    
+    try {
+        // Create new audio context each time if needed
+        if (!tickSound) {
+            tickSound = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        const oscillator = tickSound.createOscillator();
+        const gainNode = tickSound.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(tickSound.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.05;
+        
+        const currentTime = tickSound.currentTime;
+        oscillator.start(currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.1);
+        oscillator.stop(currentTime + 0.1);
+    } catch(e) {
+        console.log('Tick sound error:', e);
+    }
+}
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('soundToggle');
+            if (btn) {
+                btn.textContent = soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF';
+            }
+        }
+
+        // COMPLETE REPLACEMENT - Fix Oracle of Echo game sounds
+function playNote(frequency) {
+    // Game sounds should ALWAYS play regardless of timer sound toggle
+    try {
+        // Create audio context if needed
+        if (!tickSound) {
+            tickSound = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        // Resume audio context if suspended (browser autoplay policy)
+        if (tickSound.state === 'suspended') {
+            tickSound.resume();
+        }
+        
+        const oscillator = tickSound.createOscillator();
+        const gainNode = tickSound.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(tickSound.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.3;
+        
+        const currentTime = tickSound.currentTime;
+        oscillator.start(currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.4);
+        oscillator.stop(currentTime + 0.4);
+    } catch(e) {
+        console.log('Note play error:', e);
+    }
+}
+
+        function selectDifficulty(level) {
+            difficultyLevel = level;
+            startCampaign();
+        }
+
+        function getDifficultySettings() {
+            switch(difficultyLevel) {
+                case 'easy':
+                    return {
+                        sudokuSize: 4,
+                        timerMultiplier: 3,
+                        targetReduction: 0.5,
+                        errorTolerance: 5,
+                        hintFrequency: 'high'
+                    };
+                case 'medium':
+                    return {
+                        sudokuSize: 6,
+                        timerMultiplier: 2,
+                        targetReduction: 0.75,
+                        errorTolerance: 3,
+                        hintFrequency: 'medium'
+                    };
+                case 'hard':
+                default:
+                    return {
+                        sudokuSize: 9,
+                        timerMultiplier: 1,
+                        targetReduction: 1,
+                        errorTolerance: 1,
+                        hintFrequency: 'low'
+                    };
+            }
+        }
+
+        function goBackToDifficulty() {
+            if (confirm('Return to difficulty selection? Your current progress in this puzzle will be lost.')) {
+                if (gameState.currentTimer) {
+                    clearInterval(gameState.currentTimer);
+                }
+                document.getElementById('gameArena').classList.remove('active');
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('introScreen').style.display = 'block';
+                document.getElementById('submitBtn').disabled = false;
+                currentOracle = null;
+            }
+        }
+
+        function usePotionTime() {
+            if (gameState.potions >= 3 && gameState.currentTimer) {
+                gameState.potions -= 3;
+                gameState.timeRemaining += 15;
+                updateStats();
+                alert('Used 3 potions! Added 15 seconds to timer.');
+            } else if (gameState.potions < 3) {
+                alert('Need 3 potions to use this ability. You have: ' + gameState.potions);
+            } else {
+                alert('No active game timer to extend.');
+            }
+        }
+
+        function startCampaign() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            renderOracles();
+            updateStats();
+        }
+
+        function renderOracles() {
+            const grid = document.getElementById('oraclesGrid');
+            grid.innerHTML = '';
+            
+            oracles.forEach((oracle, index) => {
+                const card = document.createElement('div');
+                let cardClass = 'oracle-card';
+                
+                if (oracle.defeated) {
+                    cardClass += ' defeated';
+                } else if (index === currentOracleIndex) {
+                    cardClass += ' active';
+                }
+                
+                card.className = cardClass;
+                
+                if (index === currentOracleIndex && !oracle.defeated) {
+                    card.onclick = () => selectOracle(oracle);
+                } else if (index > currentOracleIndex) {
+                    card.style.opacity = '0.4';
+                    card.style.cursor = 'default';
+                }
+                
+                const statusText = oracle.defeated ? 
+                    'Defeated - Serving Your Banner' : 
+                    index === currentOracleIndex ? 
+                    'CHALLENGE ACTIVE - Click to Begin' : 
+                    index < currentOracleIndex ? 'Already Defeated' : 'Locked - Complete Previous Oracles';
+                
+                card.innerHTML = `
+                    <h3>${oracle.name}</h3>
+                    <div class="domain">${oracle.domain}</div>
+                    <p style="color: #d0d0d0; font-size: 0.9em; margin: 10px 0;">${oracle.description}</p>
+                    <div class="puzzle-type">${oracle.puzzle}</div>
+                    <div class="status">${statusText}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function selectOracle(oracle) {
+            if (oracle.defeated || oracles.indexOf(oracle) !== currentOracleIndex) {
+                if (oracle.defeated) {
+                    showAIResponse(`${oracle.name} speaks: "I have already pledged my forces to your cause, strategist. My ${oracle.army} stand ready."`);
+                } else {
+                    showAIResponse("You must defeat the Oracles in order. Complete the current challenge first.");
+                }
+                return;
+            }
+            
+            currentOracle = oracle;
+            document.getElementById('currentOracleName').textContent = oracle.name;
+            document.getElementById('currentDomain').textContent = oracle.domain;
+            document.getElementById('gameArena').classList.add('active');
+            document.getElementById('gameScreen').style.display = 'none';
+            
+            showAIResponse(`${oracle.name} challenges you: "${getOracleChallenge(oracle)}"`);
+            
+            setTimeout(() => {
+                startPuzzle(oracle);
+            }, 2000);
+        }
+
+        function getOracleChallenge(oracle) {
+            const challenges = {
+                1: "Time bends to my will. Can you solve the puzzle before your future catches up to your present?",
+                2: "Feel the heat of a thousand suns. Solve this before my flames consume your efforts.",
+                3: "Truth and lies dance in my shadows. Can you discern reality from illusion?",
+                4: "The frozen north remembers all who falter. Slide carefully on my icy domain.",
+                5: "The earth shifts beneath your feet. Adapt or be buried by change.",
+                6: "Strategy is the highest form of wisdom. Prove your tactical mind against mine.",
+                7: "War is my art. Show me you understand the brutality of combat.",
+                8: "Balance must be maintained. One wrong move tips the scales of fate.",
+                9: "Nothing is as it seems. My illusions will reshape your reality.",
+                10: "Listen to the echoes of the past. Can you match the rhythm of eternity?",
+                11: "Dreams and nightmares intertwine. Piece together the fragments of sleep.",
+                12: "I have already seen your next ten moves. Can you surprise prophecy itself?",
+                13: "Chaos reigns supreme. No rule lasts forever in my domain."
+            };
+            return challenges[oracle.id];
+        }
+
+        function startPuzzle(oracle) {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            
+            switch(oracle.id) {
+                case 1:
+                    createSudokuPuzzle(board);
+                    break;
+                case 2:
+                    createBubbleShooter(board);
+                    break;
+                case 3:
+                    createHiddenObjectGame(board);
+                    break;
+                case 4:
+                    createIcePuzzle(board);
+                    break;
+                case 5:
+                    createBlockPlacement(board);
+                    break;
+                case 6:
+                    createChessPuzzle(board);
+                    break;
+                case 7:
+                    createTacticalBattle(board);
+                    break;
+                case 8:
+                    createBalancePuzzle(board);
+                    break;
+                case 9:
+                    createMatch3Puzzle(board);
+                    break;
+                case 10:
+                    createMusicMemory(board);
+                    break;
+                case 11:
+                    createJigsawPuzzle(board);
+                    break;
+                case 12:
+                    createWordGrid(board);
+                    break;
+                case 13:
+                    createChaosPuzzle(board);
+                    break;
+            }
+            
+            startTimer(oracle);
+        }
+
+        function createSudokuPuzzle(board) {
+            const settings = getDifficultySettings();
+            const size = settings.sudokuSize;
+            
+            let puzzle, emptyCells;
+            if (size === 4) {
+                // Easy 4x4 Sudoku - 8 empty cells
+                puzzle = [
+                    [1,0,3,0],
+                    [0,3,0,1],
+                    [0,1,0,3],
+                    [3,0,1,0]
+                ];
+                emptyCells = 8;
+            } else if (size === 6) {
+                // Medium 6x6 Sudoku - 18 empty cells
+                puzzle = [
+                    [1,0,0,4,0,6],
+                    [0,6,0,0,1,0],
+                    [0,0,1,6,0,0],
+                    [0,0,6,1,0,0],
+                    [0,1,0,0,6,0],
+                    [6,0,4,0,0,1]
+                ];
+                emptyCells = 18;
+            } else {
+                // Hard 9x9 Sudoku - 51 empty cells
+                puzzle = [
+                    [5,3,0,0,7,0,0,0,0],
+                    [6,0,0,1,9,5,0,0,0],
+                    [0,9,8,0,0,0,0,6,0],
+                    [8,0,0,0,6,0,0,0,3],
+                    [4,0,0,8,0,3,0,0,1],
+                    [7,0,0,0,2,0,0,0,6],
+                    [0,6,0,0,0,0,2,8,0],
+                    [0,0,0,4,1,9,0,0,5],
+                    [0,0,0,0,8,0,0,7,9]
+                ];
+                emptyCells = 51;
+            }
+            
+            const grid = document.createElement('div');
+            grid.className = 'sudoku-grid';
+            grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            
+            const targetMoves = Math.floor(emptyCells * settings.targetReduction);
+            gameState.currentPuzzleState = {
+                puzzle: JSON.parse(JSON.stringify(puzzle)),
+                moves: 0,
+                errors: 0,
+                targetMoves: targetMoves,
+                totalEmpty: emptyCells
+            };
+            
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sudoku-cell';
+                    if (puzzle[i][j] !== 0) {
+                        cell.textContent = puzzle[i][j];
+                        cell.classList.add('fixed');
+                    } else {
+                        cell.onclick = () => promptSudokuNumber(cell, i, j, size);
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+            
+            board.appendChild(grid);
+            
+            const info = document.createElement('div');
+            info.style.textAlign = 'center';
+            info.style.marginTop = '20px';
+            info.style.color = '#4ecdc4';
+            let helpText = '';
+            if (difficultyLevel === 'easy') {
+                helpText = `<p><strong>EASY MODE:</strong> Fill ${targetMoves} cells out of ${emptyCells} empty cells with numbers 1-${size}. Any valid number works!</p>`;
+            } else if (difficultyLevel === 'medium') {
+                helpText = `<p><strong>MEDIUM MODE:</strong> Fill ${targetMoves} cells out of ${emptyCells} empty cells correctly. Numbers 1-${size} cannot repeat in rows or columns.</p>`;
+            } else {
+                helpText = `<p><strong>HARD MODE:</strong> Fill ${targetMoves} cells out of ${emptyCells} empty cells. Numbers 1-${size} must be unique in each row, column, and box.</p>`;
+            }
+            info.innerHTML = helpText;
+            board.appendChild(info);
+        }
+
+        function promptSudokuNumber(cell, row, col, size) {
+            const num = prompt(`Enter number (1-${size}):`);
+            if (num && num >= 1 && num <= size) {
+                cell.textContent = num;
+                cell.dataset.answer = num;
+                cell.style.color = '#ffd700';
+            }
+        }
+
+        // Fix 2: Oracle of Helios - Moving bubbles
+function createBubbleShooter(board) {
+    const container = document.createElement('div');
+    container.className = 'bubble-shooter';
+    
+    const canvas = document.createElement('div');
+    canvas.className = 'bubble-canvas';
+    canvas.id = 'bubbleCanvas';
+    
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#a8dadc', '#ff9ff3'];
+    const settings = getDifficultySettings();
+    
+    const rows = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 4 : 5;
+    const cols = difficultyLevel === 'easy' ? 5 : difficultyLevel === 'medium' ? 6 : 8;
+    const targetShots = Math.floor((rows * cols) * settings.targetReduction);
+    
+    gameState.currentPuzzleState = { score: 0, bubbles: [], shots: 0, targetShots: targetShots };
+    
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            bubble.style.left = (j * 60 + 30) + 'px';
+            bubble.style.top = (i * 60 + 20) + 'px';
+            bubble.onclick = () => shootBubble(bubble);
+            
+            // Add random movement
+            const speed = Math.random() * 2 + 0.5;
+            const directionX = Math.random() > 0.5 ? 1 : -1;
+            const directionY = Math.random() > 0.5 ? 1 : -1;
+            
+            bubble.dataset.speedX = speed * directionX;
+            bubble.dataset.speedY = speed * directionY;
+            
+            canvas.appendChild(bubble);
+            gameState.currentPuzzleState.bubbles.push(bubble);
+        }
+    }
+    
+    // Animate bubbles
+    const animateBubbles = setInterval(() => {
+        if (!gameState.currentPuzzleState || !gameState.currentPuzzleState.bubbles) {
+            clearInterval(animateBubbles);
+            return;
+        }
+        
+        gameState.currentPuzzleState.bubbles.forEach(bubble => {
+            if (bubble.dataset.popped) return;
+            
+            let left = parseFloat(bubble.style.left);
+            let top = parseFloat(bubble.style.top);
+            let speedX = parseFloat(bubble.dataset.speedX);
+            let speedY = parseFloat(bubble.dataset.speedY);
+            
+            left += speedX;
+            top += speedY;
+            
+            // Bounce off walls
+            if (left <= 0 || left >= 560) {
+                speedX *= -1;
+                bubble.dataset.speedX = speedX;
+            }
+            if (top <= 0 || top >= 460) {
+                speedY *= -1;
+                bubble.dataset.speedY = speedY;
+            }
+            
+            bubble.style.left = left + 'px';
+            bubble.style.top = top + 'px';
+        });
+    }, 50);
+    
+    container.appendChild(canvas);
+    
+    const info = document.createElement('div');
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#ffd700';
+    info.id = 'bubbleScore';
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Pop ${targetShots} bubbles by clicking them. Simple and quick! Helios is gentle with beginners.</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Pop ${targetShots} bubbles before the sun's heat intensifies. Click matching colors for bonus points.</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Pop ${targetShots} bubbles while Helios burns away rows. Speed and accuracy required!</p>`;
+    }
+    info.innerHTML = helpText + `<p>Popped: 0 / ${targetShots}</p>`;
+    container.appendChild(info);
+    
+    board.appendChild(container);
+}
+
+function shootBubble(bubble) {
+    if (bubble.dataset.popped) return;
+    bubble.style.transform = 'scale(0)';
+    bubble.dataset.popped = 'true';
+    gameState.currentPuzzleState.score += 10;
+    gameState.currentPuzzleState.shots++;
+    const info = document.getElementById('bubbleScore');
+    if (info) {
+        const lines = info.innerHTML.split('</p>');
+        lines[lines.length - 2] = `<p>Popped: ${gameState.currentPuzzleState.shots} / ${gameState.currentPuzzleState.targetShots}`;
+        info.innerHTML = lines.join('</p>');
+    }
+}
+
+        // Fix 3: Oracle of Nyx - Board sizes and trials
+// Replace the createHiddenObjectGame function with this updated version
+function createHiddenObjectGame(board) {
+    const objects = ['⚔️', '🛡️', '👑', '💎', '🏺', '📜', '🔮', '⚡', '🗡️', '⭐'];
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gap = '15px';
+    grid.style.maxWidth = '600px';
+    grid.style.margin = '0 auto';
+    
+    let gridSize, totalTrials, minObjects;
+    
+    if (difficultyLevel === 'easy') {
+        gridSize = 4;
+        totalTrials = 8;
+        minObjects = 10; // More than trials
+    } else if (difficultyLevel === 'medium') {
+        gridSize = 6;
+        totalTrials = 15;
+        minObjects = 18; // More than trials
+    } else {
+        gridSize = 10;
+        totalTrials = 25;
+        minObjects = 30; // More than trials
+    }
+    
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    
+    // Ensure we have enough objects
+    const totalTiles = gridSize * gridSize;
+    const objectCount = Math.min(minObjects, Math.floor(totalTiles * 0.6));
+    
+    // Create tiles with guaranteed object count
+    const tiles = [];
+    
+    // First, add the required number of objects
+    for (let i = 0; i < objectCount; i++) {
+        tiles.push({
+            isObject: true,
+            content: objects[i % objects.length]
+        });
+    }
+    
+    // Fill remaining with empty tiles
+    for (let i = objectCount; i < totalTiles; i++) {
+        tiles.push({
+            isObject: false,
+            content: ''
+        });
+    }
+    
+    // Shuffle tiles
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    
+    gameState.currentPuzzleState = { 
+        found: 0, 
+        target: objectCount,
+        trials: totalTrials,
+        remainingTrials: totalTrials,
+        gameEnded: false
+    };
+    
+    tiles.forEach((tileData, i) => {
+        const tile = document.createElement('div');
+        tile.style.aspectRatio = '1';
+        tile.style.background = 'rgba(0,0,0,0.8)';
+        tile.style.borderRadius = '12px';
+        tile.style.display = 'flex';
+        tile.style.alignItems = 'center';
+        tile.style.justifyContent = 'center';
+        tile.style.fontSize = gridSize === 10 ? '1.5em' : '2em';
+        tile.style.cursor = 'pointer';
+        tile.style.border = '2px solid rgba(255,255,255,0.2)';
+        tile.style.transition = 'all 0.3s ease';
+        
+        tile.onclick = function() {
+            if (this.dataset.revealed || gameState.currentPuzzleState.gameEnded) return;
+            
+            this.style.background = tileData.isObject ? 'rgba(78,205,196,0.5)' : 'rgba(255,107,107,0.5)';
+            this.textContent = tileData.content || '❌';
+            this.dataset.revealed = 'true';
+            
+            if (tileData.isObject) {
+                gameState.currentPuzzleState.found++;
+                showAIResponse(`Found ${gameState.currentPuzzleState.found}/${gameState.currentPuzzleState.target} objects!`);
+            } else {
+                gameState.currentPuzzleState.remainingTrials--;
+                
+                if (gameState.currentPuzzleState.remainingTrials <= 0) {
+                    gameState.currentPuzzleState.gameEnded = true;
+                    gameState.currentPuzzleState.remainingTrials = 0;
+                    
+                    if (gameState.currentTimer) {
+                        clearInterval(gameState.currentTimer);
+                    }
+                    document.getElementById('submitBtn').disabled = true;
+                    
+                    showAIResponse(`Nyx declares: "Your trials are exhausted. You have failed to pierce the shadows!"`);
+                    
+                    setTimeout(() => {
+                        alert('Game Over! No trials remaining. You found ' + gameState.currentPuzzleState.found + '/' + gameState.currentPuzzleState.target + ' objects.');
+                        exitGame();
+                    }, 2000);
+                    return;
+                }
+                
+                showAIResponse(`Wrong! Trials remaining: ${gameState.currentPuzzleState.remainingTrials}`);
+            }
+            
+            updateNyxInfo();
+            
+            // Check win condition
+            if (gameState.currentPuzzleState.found >= gameState.currentPuzzleState.target) {
+                gameState.currentPuzzleState.gameEnded = true;
+                showAIResponse(`All objects found! You have pierced through Nyx's shadows. Click Submit Answer!`);
+            }
+            
+            this.onclick = null;
+        };
+        
+        grid.appendChild(tile);
+    });
+    
+    board.appendChild(grid);
+    
+    // Add game instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(138,43,226,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(138,43,226,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #8a2be2; margin-bottom: 10px;">📜 How to Play:</h4>
+        <p style="color: #d0d0d0; font-size: 0.9em; line-height: 1.6;">
+            • Click tiles to reveal what's hidden beneath Nyx's darkness<br>
+            • Find ALL ${gameState.currentPuzzleState.target} hidden objects to win<br>
+            • Each wrong guess (❌) costs you one trial<br>
+            • You have ${totalTrials} trials total - use them wisely!<br>
+            • Run out of trials = Game Over<br>
+            • Find all objects = Victory! Then click Submit Answer
+        </p>
+    `;
+    board.insertBefore(instructions, grid);
+    
+    const info = document.createElement('div');
+    info.id = 'nyxInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#8a2be2';
+    updateNyxInfo();
+    board.appendChild(info);
+}
+
+// Update the updateNyxInfo function X 2
+function updateNyxInfo() {
+    const info = document.getElementById('nyxInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    let helpText = '';
+    
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE (4x4 Grid):</strong> Find all ${state.target} hidden objects</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE (6x6 Grid):</strong> Find all ${state.target} hidden objects</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE (10x10 Grid):</strong> Find all ${state.target} hidden objects</p>`;
+    }
+    
+    const trialsColor = state.remainingTrials <= 5 ? '#ff6b6b' : 
+                        state.remainingTrials <= 10 ? '#ffd700' : '#4ecdc4';
+    
+    helpText += `<p style="color: ${trialsColor}; font-size: 1.2em; font-weight: bold; margin-top: 10px;">
+        Trials Remaining: ${state.remainingTrials} / ${state.trials}
+    </p>`;
+    
+    const foundColor = state.found >= state.target ? '#4ecdc4' : '#ffd700';
+    helpText += `<p style="color: ${foundColor}; font-size: 1.3em; font-weight: bold; margin-top: 5px;">
+        Objects Found: ${state.found} / ${state.target}
+    </p>`;
+    
+    if (state.found >= state.target) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+             ALL OBJECTS FOUND! CLICK SUBMIT ANSWER!
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+// Replace the validateHiddenObjects function with this corrected version
+function validateHiddenObjects() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    const found = gameState.currentPuzzleState.found;
+    const target = gameState.currentPuzzleState.target;
+    
+    console.log('=== NYX VALIDATION ===');
+    console.log('Found:', found);
+    console.log('Target:', target);
+    console.log('Result:', found >= target);
+    
+    // SIMPLE: Did we find all objects? YES = WIN, NO = LOSE
+    return found >= target;
+}
+
+// Also update the submitAnswer function to handle Nyx better
+// Find the submitAnswer function and update the Oracle 3 handling:
+function submitAnswer() {
+    if (gameState.currentTimer) {
+        clearInterval(gameState.currentTimer);
+    }
+    
+    document.getElementById('submitBtn').disabled = true;
+    
+    console.log('=== SUBMIT ANSWER PRESSED ===');
+    console.log('Current Oracle ID:', currentOracle.id);
+    console.log('Current Puzzle State:', gameState.currentPuzzleState);
+    
+    // Special handling for Oracle of Nyx (ID 3)
+    if (currentOracle.id === 3) {
+        const found = gameState.currentPuzzleState.found;
+        const target = gameState.currentPuzzleState.target;
+        
+        if (found >= target) {
+            // Player found all objects - VICTORY
+            showAIResponse(`${currentOracle.name} concedes: "You have pierced through my shadows and found all hidden treasures. My domain is yours!"`);
+            setTimeout(() => victorySequence(), 1500);
+            return;
+        } else {
+            // Player didn't find all objects - DEFEAT
+            showAIResponse(`${currentOracle.name} mocks: "You found only ${found} of ${target} objects. The shadows have consumed you!"`);
+            setTimeout(() => {
+                alert(`FAILED! You found ${found}/${target} objects. Trials remaining: ${gameState.currentPuzzleState.remainingTrials}`);
+                exitGame();
+            }, 2000);
+            return;
+        }
+    }
+    
+    // For all other oracles, use the standard validation
+    const success = validateAnswer();
+    
+    console.log('Validation Result:', success);
+    
+    if (success) {
+        showAIResponse(`${currentOracle.name} concedes: "You have proven your worth. My domain is yours!"`);
+        setTimeout(() => victorySequence(), 1500);
+    } else {
+        showAIResponse(`${currentOracle.name} mocks: "Your answer is insufficient. Requirements not met!"`);
+        
+        // Show what was needed
+        let requirement = getRequirementMessage();
+        setTimeout(() => {
+            alert('FAILED! ' + requirement + '\n\nTry again.');
+            exitGame();
+        }, 2000);
+    }
+}
+
+// Also update the createHiddenObjectGame to ensure proper game flow
+// In the tile.onclick function, update the win condition check:
+function createHiddenObjectGame(board) {
+    const objects = ['⚔️', '🛡️', '👑', '💎', '🏺', '📜', '🔮', '⚡', '🗡️', '⭐'];
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gap = '15px';
+    grid.style.maxWidth = '600px';
+    grid.style.margin = '0 auto';
+    
+    let gridSize, totalTrials, minObjects;
+    
+    if (difficultyLevel === 'easy') {
+        gridSize = 4;
+        totalTrials = 8;
+        minObjects = 10;
+    } else if (difficultyLevel === 'medium') {
+        gridSize = 6;
+        totalTrials = 15;
+        minObjects = 18;
+    } else {
+        gridSize = 10;
+        totalTrials = 25;
+        minObjects = 30;
+    }
+    
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    
+    const totalTiles = gridSize * gridSize;
+    const objectCount = Math.min(minObjects, Math.floor(totalTiles * 0.6));
+    
+    const tiles = [];
+    
+    for (let i = 0; i < objectCount; i++) {
+        tiles.push({
+            isObject: true,
+            content: objects[i % objects.length]
+        });
+    }
+    
+    for (let i = objectCount; i < totalTiles; i++) {
+        tiles.push({
+            isObject: false,
+            content: ''
+        });
+    }
+    
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    
+    gameState.currentPuzzleState = { 
+        found: 0, 
+        target: objectCount,
+        trials: totalTrials,
+        remainingTrials: totalTrials,
+        gameEnded: false,
+        victory: false
+    };
+    
+    tiles.forEach((tileData, i) => {
+        const tile = document.createElement('div');
+        tile.style.aspectRatio = '1';
+        tile.style.background = 'rgba(0,0,0,0.8)';
+        tile.style.borderRadius = '12px';
+        tile.style.display = 'flex';
+        tile.style.alignItems = 'center';
+        tile.style.justifyContent = 'center';
+        tile.style.fontSize = gridSize === 10 ? '1.5em' : '2em';
+        tile.style.cursor = 'pointer';
+        tile.style.border = '2px solid rgba(255,255,255,0.2)';
+        tile.style.transition = 'all 0.3s ease';
+        
+        tile.onclick = function() {
+    if (this.dataset.revealed || gameState.currentPuzzleState.gameEnded) return;
+    
+    this.style.background = tileData.isObject ? 'rgba(78,205,196,0.5)' : 'rgba(255,107,107,0.5)';
+    this.textContent = tileData.content || '❌';
+    this.dataset.revealed = 'true';
+    
+    if (tileData.isObject) {
+        // FOUND AN OBJECT
+        gameState.currentPuzzleState.found++;
+        showAIResponse(`Found ${gameState.currentPuzzleState.found}/${gameState.currentPuzzleState.target} objects!`);
+        
+        updateNyxInfo();
+        
+        // CHECK IF WE WON
+        if (gameState.currentPuzzleState.found >= gameState.currentPuzzleState.target) {
+            gameState.currentPuzzleState.gameEnded = true;
+            gameState.currentPuzzleState.victory = true;
+            
+            showAIResponse(`VICTORY! ALL ${gameState.currentPuzzleState.target} OBJECTS FOUND! Click Submit Answer NOW!`);
+            
+            // Make submit button very obvious
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+            submitBtn.style.transform = 'scale(1.1)';
+            submitBtn.textContent = 'SUBMIT VICTORY';
+        }
+    } else {
+        // WRONG TILE
+        gameState.currentPuzzleState.remainingTrials--;
+        
+        updateNyxInfo();
+        
+        // CHECK IF WE LOST (out of trials)
+        if (gameState.currentPuzzleState.remainingTrials <= 0) {
+            gameState.currentPuzzleState.gameEnded = true;
+            gameState.currentPuzzleState.remainingTrials = 0;
+            gameState.currentPuzzleState.victory = false;
+            
+            if (gameState.currentTimer) {
+                clearInterval(gameState.currentTimer);
+            }
+            document.getElementById('submitBtn').disabled = true;
+            
+            showAIResponse(`Nyx declares: "Your trials are exhausted! DEFEAT!"`);
+            
+            setTimeout(() => {
+                alert('GAME OVER! No trials left. Found: ' + gameState.currentPuzzleState.found + '/' + gameState.currentPuzzleState.target);
+                exitGame();
+            }, 2000);
+            return;
+        }
+        
+        showAIResponse(`Wrong! Trials remaining: ${gameState.currentPuzzleState.remainingTrials}`);
+    }
+    
+    this.onclick = null;
+};
+        
+        grid.appendChild(tile);
+    });
+    
+    board.appendChild(grid);
+    
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(138,43,226,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(138,43,226,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #8a2be2; margin-bottom: 10px;">📜 How to Play:</h4>
+        <p style="color: #d0d0d0; font-size: 0.9em; line-height: 1.6;">
+            • Click tiles to reveal what's hidden beneath Nyx's darkness<br>
+            • Find ALL ${gameState.currentPuzzleState.target} hidden objects to win<br>
+            • Each wrong guess (❌) costs you one trial<br>
+            • You have ${totalTrials} trials total - use them wisely!<br>
+            • Run out of trials = Game Over<br>
+            • Find all objects = Victory! Then click Submit Answer
+        </p>
+    `;
+    board.insertBefore(instructions, grid);
+    
+    const info = document.createElement('div');
+    info.id = 'nyxInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#8a2be2';
+    updateNyxInfo();
+    board.appendChild(info);
+}
+
+// Update the getRequirementMessage function for Oracle 3
+function getRequirementMessage() {
+    const oracleId = currentOracle.id;
+    const settings = getDifficultySettings();
+    
+    switch(oracleId) {
+        case 1:
+            return `You need to fill ${gameState.currentPuzzleState.targetMoves} cells with numbers.`;
+        case 2:
+            return `You need to pop ${gameState.currentPuzzleState.targetShots} bubbles. You popped: ${gameState.currentPuzzleState.shots}`;
+        case 3:
+    const foundObjs = gameState.currentPuzzleState.found;
+    const targetObjs = gameState.currentPuzzleState.target;
+    if (foundObjs >= targetObjs) {
+        return `YOU WON! Found all ${targetObjs} objects!`;
+    }
+    return `FAILED! Found only ${foundObjs}/${targetObjs} objects.`;
+        case 4:
+            return `You need to reach the star goal (or click any tile in Easy mode).`;
+        case 5:
+            return `You need to place ${gameState.currentPuzzleState.target} blocks. You placed: ${gameState.currentPuzzleState.placed}`;
+        case 6:
+    const moves = gameState.currentPuzzleState.moves;
+    const reqMoves = gameState.currentPuzzleState.requiredMoves;
+    if (moves === reqMoves) {
+        return `YOU WON! Made all ${reqMoves} moves!`;
+    }
+    return `FAILED! Made ${moves}/${reqMoves} moves. You needed exactly ${reqMoves} moves.`;
+        case 7:
+            return `You need to defeat ${gameState.currentPuzzleState.target} enemies. You defeated: ${gameState.currentPuzzleState.defeated}`;
+        case 8:
+            return `You need to balance scales to ${gameState.currentPuzzleState.targetWeight}kg (±${gameState.currentPuzzleState.tolerance}kg). Your weight: ${gameState.currentPuzzleState.leftWeight}kg`;
+        case 9:
+            const reqMatches = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 6 : 8;
+            return `You need exactly ${reqMatches} matches. You made: ${gameState.currentPuzzleState.matches}`;
+        case 10:
+            const reqRounds = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+            return `You need to complete ${reqRounds} rounds. You completed: ${gameState.currentPuzzleState.round}`;
+        case 11:
+            return `You need to place ${gameState.currentPuzzleState.target} jigsaw pieces. You placed: ${gameState.currentPuzzleState.placed}`;
+        case 12:
+            const reqWords = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+            return `You need to form exactly ${reqWords} valid 4-letter words. You formed: ${gameState.currentPuzzleState.words}`;
+        case 13:
+            const reqChaos = difficultyLevel === 'easy' ? 8 : difficultyLevel === 'medium' ? 12 : 15;
+            return `You need to match exactly ${reqChaos} pairs. You matched: ${gameState.currentPuzzleState.chaosCompleted}`;
+        default:
+            return 'Requirements not met.';
+    }
+}
+
+
+        // Fix 4: Oracle of Boreas - Different boards
+function createIcePuzzle(board) {
+    const grid = document.createElement('div');
+    grid.className = 'ice-puzzle';
+    
+    let maze, startX, startY, goalX, goalY;
+    
+    if (difficultyLevel === 'easy') {
+        grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        maze = [
+            [1,1,1,1],
+            [1,2,0,1],
+            [1,0,3,1],
+            [1,1,1,1]
+        ];
+        startX = 1; startY = 1; goalX = 2; goalY = 2;
+    } else if (difficultyLevel === 'medium') {
+        grid.style.gridTemplateColumns = 'repeat(6, 1fr)';
+        maze = [
+            [1,1,1,1,1,1],
+            [1,2,0,0,0,1],
+            [1,0,1,0,0,1],
+            [1,0,0,0,1,1],
+            [1,0,0,3,0,1],
+            [1,1,1,1,1,1]
+        ];
+        startX = 1; startY = 1; goalX = 3; goalY = 4;
+    } else {
+        grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+        maze = [
+            [1,1,1,1,1,1,1,1],
+            [1,2,0,0,1,0,0,1],
+            [1,0,1,0,0,0,1,1],
+            [1,0,0,1,0,0,0,1],
+            [1,1,0,0,0,1,0,1],
+            [1,0,0,1,0,0,0,1],
+            [1,0,0,0,0,0,3,1],
+            [1,1,1,1,1,1,1,1]
+        ];
+        startX = 1; startY = 1; goalX = 6; goalY = 6;
+    }
+    
+    gameState.currentPuzzleState = { 
+        playerPos: {x: startX, y: startY}, 
+        goalPos: {x: goalX, y: goalY},
+        moves: 0,
+        maze: maze,
+        gridSize: maze.length
+    };
+    
+    for (let i = 0; i < maze.length; i++) {
+        for (let j = 0; j < maze[i].length; j++) {
+            const tile = document.createElement('div');
+            tile.className = 'ice-tile';
+            tile.dataset.x = j;
+            tile.dataset.y = i;
+            
+            if (maze[i][j] === 1) {
+                tile.classList.add('wall');
+                tile.textContent = '❄️';
+            } else if (maze[i][j] === 2) {
+                tile.classList.add('player');
+                tile.textContent = '⚔️';
+                tile.id = 'icePlayer';
+            } else if (maze[i][j] === 3) {
+                tile.classList.add('goal');
+                tile.textContent = '⭐';
+            }
+            
+            tile.onclick = () => movePlayer(tile, maze);
+            grid.appendChild(tile);
+        }
+    }
+    
+    board.appendChild(grid);
+    
+    const info = document.createElement('div');
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#a8dadc';
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Click the goal star to complete. Boreas grants safe passage.</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Slide to the star goal. You slide until hitting a wall. Plan your path through the ice!</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Navigate the frozen maze to reach the goal. Every move slides you until collision. Boreas freezes the careless!</p>`;
+    }
+    info.innerHTML = helpText;
+    board.appendChild(info);
+}
+
+function movePlayer(tile, maze) {
+    const x = parseInt(tile.dataset.x);
+    const y = parseInt(tile.dataset.y);
+    
+    if (tile.classList.contains('goal')) {
+        gameState.currentPuzzleState.reachedGoal = true;
+        showAIResponse("You've reached the goal! Click Submit Answer to complete the challenge.");
+    }
+}
+
+        // COMPLETE REPLACEMENT - Oracle of Gaia (Block Placement)
+function createBlockPlacement(board) {
+    let gridRows, gridCols, answerPattern, goalText;
+    
+    if (difficultyLevel === 'easy') {
+        // 5x5 - Form letter G
+        gridRows = 5;
+        gridCols = 5;
+        goalText = "Form the Google logo 'G'";
+        answerPattern = [
+            [0,1,1,1,0],
+            [1,0,0,0,1],
+            [1,0,0,0,0],
+            [1,0,1,1,1],
+            [0,1,1,1,1]
+        ];
+    } else if (difficultyLevel === 'medium') {
+        // 8x8 - Form letter G
+        gridRows = 8;
+        gridCols = 8;
+        goalText = "Form the Google logo 'G'";
+        answerPattern = [
+            [0,1,1,1,1,1,0,0],
+            [1,0,0,0,0,0,0,0],
+            [1,0,0,0,0,0,0,0],
+            [1,0,0,1,1,1,1,0],
+            [1,0,0,0,0,0,1,0],
+            [1,0,0,0,0,0,1,0],
+            [0,1,1,1,1,1,0,0],
+            [0,0,0,0,0,0,0,0]
+        ];
+    } else {
+        // 5x35 - Form GOOGLE
+        gridRows = 5;
+        gridCols = 35;
+        goalText = "Form the 'GOOGLE'";
+        answerPattern = [
+            [0,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,0,0,1,1,1,1,1],
+            [1,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0],
+            [1,0,1,1,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,0,0,0,0,0,1,1,1,1,0],
+            [1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0],
+            [0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1]
+        ];
+    }
+    
+    const container = document.createElement('div');
+    container.style.width = '100%';
+    container.style.overflowX = 'auto';
+    container.style.overflowY = 'hidden';
+    
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
+    grid.style.gap = '3px';
+    grid.style.maxWidth = gridCols > 10 ? '95vw' : '600px';
+    grid.style.margin = '0 auto';
+    
+    const cellSize = gridCols > 10 ? 'min(20px, 2vw)' : 'min(50px, 5vw)';
+    
+    gameState.currentPuzzleState = { 
+        placed: 0, 
+        target: 0,
+        grid: [],
+        answer: answerPattern,
+        gridRows: gridRows,
+        gridCols: gridCols
+    };
+    
+    // Count target cells (1s in answer)
+    for (let i = 0; i < gridRows; i++) {
+        for (let j = 0; j < gridCols; j++) {
+            if (answerPattern[i][j] === 1) {
+                gameState.currentPuzzleState.target++;
+            }
+        }
+    }
+    
+    // Create grid
+    for (let i = 0; i < gridRows; i++) {
+        gameState.currentPuzzleState.grid[i] = [];
+        for (let j = 0; j < gridCols; j++) {
+            const tile = document.createElement('div');
+            tile.style.aspectRatio = '1';
+            tile.style.background = '#1a1a2e';
+            tile.style.borderRadius = '4px';
+            tile.style.cursor = 'pointer';
+            tile.style.border = '1px solid rgba(255,255,255,0.2)';
+            tile.style.transition = 'all 0.2s ease';
+            tile.style.minWidth = cellSize;
+            tile.style.minHeight = cellSize;
+            tile.dataset.row = i;
+            tile.dataset.col = j;
+            tile.dataset.clicked = 'false';
+            
+            tile.onclick = function() {
+                handleGaiaTileClick(this, i, j);
+            };
+            
+            grid.appendChild(tile);
+            gameState.currentPuzzleState.grid[i][j] = tile;
+        }
+    }
+    
+    container.appendChild(grid);
+    board.appendChild(container);
+    
+    // Add instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(78,205,196,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(78,205,196,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #44a08d; margin-bottom: 10px;">🌍 Oracle of Gaia - Terraforming Challenge</h4>
+        <p style="color: #d0d0d0; font-size: 0.95em; line-height: 1.6;">
+            <strong style="color: #4ecdc4;">Goal:</strong> ${goalText} by clicking the correct squares<br>
+            <strong style="color: #4ecdc4;">How to Play:</strong><br>
+            • Click dark squares to reveal colored blocks<br>
+            • Green blocks (✓) = Correct position - part of the letter/word<br>
+            • Red blocks (✗) = Wrong position - not part of the pattern<br>
+            • Match the exact pattern to win<br>
+            • Grid: ${gridRows} rows × ${gridCols} columns<br>
+            <strong style="color: #ffd700;">Target: Click exactly ${gameState.currentPuzzleState.target} correct squares</strong>
+        </p>
+    `;
+    board.insertBefore(instructions, container);
+    
+    const info = document.createElement('div');
+    info.id = 'gaiaInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#44a08d';
+    updateGaiaInfo();
+    board.appendChild(info);
+}
+
+function handleGaiaTileClick(tile, row, col) {
+    if (tile.dataset.clicked === 'true') return;
+    
+    const answer = gameState.currentPuzzleState.answer;
+    const isCorrect = answer[row][col] === 1;
+    
+    tile.dataset.clicked = 'true';
+    
+    if (isCorrect) {
+        tile.style.background = 'rgba(78,205,196,0.7)';
+        tile.textContent = '✓';
+        tile.style.color = '#fff';
+        tile.style.fontSize = '1.5em';
+        tile.style.display = 'flex';
+        tile.style.alignItems = 'center';
+        tile.style.justifyContent = 'center';
+        gameState.currentPuzzleState.placed++;
+    } else {
+        tile.style.background = 'rgba(255,107,107,0.7)';
+        tile.textContent = '✗';
+        tile.style.color = '#fff';
+        tile.style.fontSize = '1.5em';
+        tile.style.display = 'flex';
+        tile.style.alignItems = 'center';
+        tile.style.justifyContent = 'center';
+    }
+    
+    updateGaiaInfo();
+    
+    // Check win condition
+    if (gameState.currentPuzzleState.placed >= gameState.currentPuzzleState.target) {
+        // Verify all correct tiles are clicked
+        let allCorrect = true;
+        for (let i = 0; i < gameState.currentPuzzleState.gridRows; i++) {
+            for (let j = 0; j < gameState.currentPuzzleState.gridCols; j++) {
+                if (answer[i][j] === 1) {
+                    const checkTile = gameState.currentPuzzleState.grid[i][j];
+                    if (checkTile.dataset.clicked !== 'true' || checkTile.textContent !== '✓') {
+                        allCorrect = false;
+                        break;
+                    }
+                }
+            }
+            if (!allCorrect) break;
+        }
+        
+        if (allCorrect) {
+            showAIResponse(`Pattern complete! Gaia approves your terraforming. Click Submit Answer!`);
+        }
+    }
+}
+
+function updateGaiaInfo() {
+    const info = document.getElementById('gaiaInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE (5×5):</strong> Form letter 'G'</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE (8×8):</strong> Form letter 'G'</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE (5×35):</strong> Form word 'GOOGLE'</p>`;
+    }
+    
+    const placedColor = state.placed >= state.target ? '#4ecdc4' : '#ffd700';
+    helpText += `<p style="color: ${placedColor}; font-size: 1.3em; font-weight: bold; margin-top: 10px;">
+        Correct Blocks: ${state.placed} / ${state.target}
+    </p>`;
+    
+    if (state.placed >= state.target) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+             PATTERN COMPLETE! CLICK SUBMIT ANSWER! 
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+function validateBlockPlacement() {
+    if (!gameState.currentPuzzleState) {
+        console.log('GAIA: No puzzle state');
+        return false;
+    }
+    
+    const placed = gameState.currentPuzzleState.placed;
+    const target = gameState.currentPuzzleState.target;
+    const answer = gameState.currentPuzzleState.answer;
+    const grid = gameState.currentPuzzleState.grid;
+    
+    console.log('GAIA VALIDATION:');
+    console.log('  Placed:', placed);
+    console.log('  Target:', target);
+    
+    // Must have placed enough correct blocks
+    if (placed < target) {
+        console.log('  Result: false - not enough blocks');
+        return false;
+    }
+    
+    // Verify pattern matches exactly
+    for (let i = 0; i < gameState.currentPuzzleState.gridRows; i++) {
+        for (let j = 0; j < gameState.currentPuzzleState.gridCols; j++) {
+            if (answer[i][j] === 1) {
+                const tile = grid[i][j];
+                if (!tile || tile.dataset.clicked !== 'true' || tile.textContent !== '✓') {
+                    console.log(`  Result: false - missing correct tile at ${i},${j}`);
+                    return false;
+                }
+            }
+        }
+    }
+    
+    console.log('  Result: true - pattern matches!');
+    return true;
+}
+
+
+        // Fix 6: Oracle of Athenaia - Different chess boards with checkmate puzzles
+// COMPLETE REPLACEMENT of createChessPuzzle function
+function createChessPuzzle(board) {
+    const chessBoard = document.createElement('div');
+    chessBoard.className = 'chess-board';
+    
+    let puzzleBoard, requiredMoves, playerSide;
+    
+    if (difficultyLevel === 'easy') {
+        // Easy: 3 moves - simple path
+        requiredMoves = 3;
+        playerSide = 'BLACK';
+        puzzleBoard = [
+    ['','','','','','','♔','♖'],  // Row 0: White back rank, White King on g1
+    ['♙','♙','♙','','♙','♙','','♙'], // Row 1: White pawns
+    ['','','','','','','',''],   
+    ['','','','','','','',''], 
+    ['','','','','','','♛',''],  // Row 4: Black Queen 3 squares from White King
+    ['','','','','','','',''], 
+    ['♟','♟','♟','','♟','♟','♟','♟'], // Row 6: Black pawns
+    ['♜','','♝','','♚','','♞','♜']   // Row 7: Black back rank, Black King on e8
+];
+
+
+
+    } else if (difficultyLevel === 'medium') {
+        // Medium: 5 moves
+        requiredMoves = 5;
+        playerSide = 'BLACK';
+        puzzleBoard = [
+    ['','♛','','','','','','♔'],  // Row 0: White King on h1
+    ['♙','♙','♙','','♙','♙','♙','♙'], // Row 1: White pawns
+    ['','','','','','','',''],   
+    ['','','','','','','',''], 
+    ['','','','','','','',''],  
+    ['','','','','','','',''],  // Row 5: Black Queen, 5 squares away diagonally from h1
+    ['♟','♟','♟','','♟','♟','♟','♟'], // Row 6: Black pawns
+    ['♜','','♝','','♚','','♞','♜']   // Row 7: Black back rank, Black King on e8
+];
+
+
+    } else {
+        // Hard: 8 moves
+        requiredMoves = 8;
+        playerSide = 'BLACK';
+        puzzleBoard = [
+    ['','','','','','','','♔'],  // Row 0: White King on h1
+    ['♙','♙','♙','','♙','♙','♙','♙'], // Row 1: White pawns
+    ['','','','','','','',''],   
+    ['','','','','','','',''], 
+    ['','','','','','','',''],  
+    ['','','','','','','','♛'],  // Row 5: Black Queen on h3 (7 squares diagonally to h1)
+    ['♟','♟','♟','','♟','♟','♟','♟'], // Row 6: Black pawns
+    ['♜','','♝','','♚','','♞','♜']   // Row 7: Black back rank, Black King on e8
+];
+
+    }
+    
+    gameState.currentPuzzleState = { 
+        moves: 0, 
+        requiredMoves: requiredMoves,
+        board: puzzleBoard,
+        moveSequence: [],
+        playerSide: playerSide
+    };
+    
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            const square = document.createElement('div');
+            square.className = `chess-square ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
+            square.textContent = puzzleBoard[i][j];
+            square.dataset.row = i;
+            square.dataset.col = j;
+            square.dataset.piece = puzzleBoard[i][j];
+            
+            // Make all squares clickable
+            square.onclick = () => handleChessClick(square, i, j);
+            
+            // Highlight player pieces
+            if (puzzleBoard[i][j] === '♚' || puzzleBoard[i][j] === '♛' || 
+                puzzleBoard[i][j] === '♜' || puzzleBoard[i][j] === '♝' || 
+                puzzleBoard[i][j] === '♞' || puzzleBoard[i][j] === '♟') {
+                square.style.border = '3px solid #4ecdc4';
+            }
+            
+            chessBoard.appendChild(square);
+        }
+    }
+    
+    board.appendChild(chessBoard);
+    
+    // Add clear instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(255,215,0,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(255,215,0,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #ffd700; margin-bottom: 10px;">♟️ How to Play:</h4>
+        <p style="color: #d0d0d0; font-size: 0.95em; line-height: 1.6;">
+            <strong style="color: #4ecdc4;">You are playing as: ${playerSide} pieces (♚ = your King)</strong><br>
+            • Click exactly ${requiredMoves} empty squares to create your winning path<br>
+            • Click the empty squares between your King (♚) and opponent's King (♔)<br>
+            • Each click = 1 move in your sequence<br>
+            • After ${requiredMoves} clicks, press Submit Answer to win<br>
+            • White squares (♔) are your opponent
+        </p>
+    `;
+    board.insertBefore(instructions, chessBoard);
+    
+    const info = document.createElement('div');
+    info.id = 'chessInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#ffd700';
+    updateChessInfo();
+    board.appendChild(info);
+}
+
+function handleChessClick(square, row, col) {
+    // Only allow clicks on empty squares
+    if (square.dataset.piece !== '') {
+        showAIResponse("You can only click empty squares for your move sequence!");
+        return;
+    }
+    
+    // Check if already clicked
+    if (square.dataset.clicked === 'true') {
+        showAIResponse("Square already selected!");
+        return;
+    }
+    
+    // Check if we've reached the move limit
+    if (gameState.currentPuzzleState.moves >= gameState.currentPuzzleState.requiredMoves) {
+        showAIResponse("You've already made all required moves! Click Submit Answer.");
+        return;
+    }
+    
+    // Mark this square as part of the move sequence
+    gameState.currentPuzzleState.moves++;
+    gameState.currentPuzzleState.moveSequence.push({row: row, col: col});
+    
+    square.dataset.clicked = 'true';
+    square.style.background = (row + col) % 2 === 0 ? 
+        'rgba(255,215,0,0.7)' : 'rgba(255,215,0,0.5)';
+    square.textContent = '✓';
+    square.style.fontSize = '2em';
+    square.style.color = '#4ecdc4';
+    
+    updateChessInfo();
+    
+    console.log('Chess move', gameState.currentPuzzleState.moves, '/', gameState.currentPuzzleState.requiredMoves);
+    
+    // Show message when all moves are made
+    if (gameState.currentPuzzleState.moves === gameState.currentPuzzleState.requiredMoves) {
+        showAIResponse(`All ${gameState.currentPuzzleState.requiredMoves} moves selected! Click Submit Answer to complete the challenge!`);
+        
+        // Highlight submit button
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+        submitBtn.style.transform = 'scale(1.1)';
+        submitBtn.textContent = 'SUBMIT MOVES';
+    }
+}
+
+function updateChessInfo() {
+    const info = document.getElementById('chessInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Click ${state.requiredMoves} empty squares for your winning path</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Click ${state.requiredMoves} empty squares strategically</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Click ${state.requiredMoves} empty squares - think like a grandmaster!</p>`;
+    }
+    
+    const movesColor = state.moves >= state.requiredMoves ? '#4ecdc4' : '#ffd700';
+    helpText += `<p style="color: ${movesColor}; font-size: 1.3em; font-weight: bold; margin-top: 10px;">
+        Moves Selected: ${state.moves} / ${state.requiredMoves}
+    </p>`;
+    
+    if (state.moves >= state.requiredMoves) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+            ALL MOVES SELECTED! CLICK SUBMIT ANSWER!
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+// COMPLETE REPLACEMENT of validateChess function
+function validateChess() {
+    if (!gameState.currentPuzzleState) {
+        console.log('CHESS: No puzzle state');
+        return false;
+    }
+    
+    const moves = gameState.currentPuzzleState.moves;
+    const required = gameState.currentPuzzleState.requiredMoves;
+    
+    console.log('CHESS VALIDATION:');
+    console.log('  Moves:', moves);
+    console.log('  Required:', required);
+    console.log('  Result:', moves === required);
+    
+    // Must make EXACTLY the required number of moves
+    return moves === required;
+}
+
+
+
+        // Fix 7: Oracle of Aresion - Enemies change position and directional combat
+function createTacticalBattle(board) {
+    const grid = document.createElement('div');
+    grid.className = 'tactical-grid';
+    
+    const settings = getDifficultySettings();
+    const target = Math.floor(5 * settings.targetReduction);
+    
+    const gridData = [];
+    let enemyCount = 0;
+    
+    for (let i = 0; i < 25; i++) {
+        const isEnemy = Math.random() > 0.6 && enemyCount < 10;
+        if (isEnemy) enemyCount++;
+        
+        const tile = document.createElement('div');
+        tile.className = 'tactical-tile';
+        tile.dataset.index = i;
+        tile.dataset.row = Math.floor(i / 5);
+        tile.dataset.col = i % 5;
+        
+        if (isEnemy) {
+            tile.classList.add('enemy');
+            tile.textContent = '👹';
+            tile.dataset.isEnemy = 'true';
+        } else if (Math.random() > 0.7) {
+            tile.textContent = ['⚔️', '🛡️', '🏹'][Math.floor(Math.random() * 3)];
+            tile.classList.add('weapon');
+            tile.dataset.isWeapon = 'true';
+        }
+        
+        tile.onclick = function() {
+            handleTacticalClick(parseInt(this.dataset.index));
+        };
+        
+        grid.appendChild(tile);
+        gridData.push(tile);
+    }
+    
+    gameState.currentPuzzleState = { 
+        defeated: 0, 
+        target: target,
+        gridData: gridData,
+        selectedWeapon: null
+    };
+    
+    // Move enemies periodically
+    setInterval(() => {
+        if (!gameState.currentPuzzleState || !gameState.currentPuzzleState.gridData) return;
+        moveEnemies();
+    }, 3000);
+    
+    board.appendChild(grid);
+    
+    const info = document.createElement('div');
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#ff6b6b';
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Defeat ${target} enemies. Click a weapon, then click adjacent enemy (up/down/left/right).</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Defeat ${target} enemies. They move! Use weapons on adjacent tiles.</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Defeat ${target} enemies. Fast movement, directional combat only!</p>`;
+    }
+    info.innerHTML = helpText;
+    board.appendChild(info);
+}
+
+function handleTacticalClick(index) {
+    const tile = gameState.currentPuzzleState.gridData[index];
+    
+    if (tile.dataset.isWeapon === 'true' && !tile.dataset.used) {
+        // Select weapon
+        gameState.currentPuzzleState.gridData.forEach(t => t.style.border = '2px solid rgba(255,255,255,0.2)');
+        tile.style.border = '4px solid #ffd700';
+        gameState.currentPuzzleState.selectedWeapon = index;
+    } else if (tile.dataset.isEnemy === 'true' && gameState.currentPuzzleState.selectedWeapon !== null) {
+        // Try to attack enemy
+        const weaponIndex = gameState.currentPuzzleState.selectedWeapon;
+        const weaponRow = Math.floor(weaponIndex / 5);
+        const weaponCol = weaponIndex % 5;
+        const enemyRow = Math.floor(index / 5);
+        const enemyCol = index % 5;
+        
+        // Check if adjacent (up, down, left, right only)
+        const isAdjacent = (Math.abs(weaponRow - enemyRow) === 1 && weaponCol === enemyCol) ||
+                          (Math.abs(weaponCol - enemyCol) === 1 && weaponRow === enemyRow);
+        
+        if (isAdjacent) {
+            tile.textContent = '💥';
+            tile.style.background = 'rgba(78,205,196,0.5)';
+            tile.classList.remove('enemy');
+            tile.dataset.isEnemy = 'false';
+            gameState.currentPuzzleState.defeated++;
+            
+            // Mark weapon as used
+            const weaponTile = gameState.currentPuzzleState.gridData[weaponIndex];
+            weaponTile.dataset.used = 'true';
+            weaponTile.style.opacity = '0.3';
+            
+            gameState.currentPuzzleState.selectedWeapon = null;
+            console.log('Enemy defeated. Total:', gameState.currentPuzzleState.defeated);
+        } else {
+            showAIResponse("Enemy not adjacent to weapon! Must be up/down/left/right.");
+        }
+    }
+}
+
+function moveEnemies() {
+    const gridData = gameState.currentPuzzleState.gridData;
+    const enemies = gridData.filter(t => t.dataset.isEnemy === 'true');
+    
+    enemies.forEach(enemy => {
+        const currentIndex = parseInt(enemy.dataset.index);
+        const row = Math.floor(currentIndex / 5);
+        const col = currentIndex % 5;
+        
+        // Random direction
+        const directions = [
+            {dr: -1, dc: 0}, // up
+            {dr: 1, dc: 0},  // down
+            {dr: 0, dc: -1}, // left
+            {dr: 0, dc: 1}   // right
+        ];
+        
+        const dir = directions[Math.floor(Math.random() * directions.length)];
+        const newRow = row + dir.dr;
+        const newCol = col + dir.dc;
+        
+        if (newRow >= 0 && newRow < 5 && newCol >= 0 && newCol < 5) {
+            const newIndex = newRow * 5 + newCol;
+            const newTile = gridData[newIndex];
+            
+            if (!newTile.dataset.isEnemy && !newTile.dataset.isWeapon) {
+                // Move enemy
+                enemy.textContent = '';
+                enemy.classList.remove('enemy');
+                enemy.dataset.isEnemy = 'false';
+                
+                newTile.textContent = '👹';
+                newTile.classList.add('enemy');
+                newTile.dataset.isEnemy = 'true';
+            }
+        }
+    });
+}
+
+
+        // Fix 8: Oracle of Themis - Different questions per difficulty
+function createBalancePuzzle(board) {
+    const container = document.createElement('div');
+    container.style.textAlign = 'center';
+    
+    const scale = document.createElement('div');
+    scale.style.fontSize = '4em';
+    scale.style.margin = '40px 0';
+    scale.textContent = '⚖️';
+    container.appendChild(scale);
+    
+    let targetWeight, tolerance, question;
+    
+    if (difficultyLevel === 'easy') {
+        targetWeight = 15;
+        tolerance = 5;
+        question = "Balance to +15kg (±5kg tolerance)";
+    } else if (difficultyLevel === 'medium') {
+        targetWeight = 21;
+        tolerance = 3;
+        question = "Balance to exactly 21kg (±3kg tolerance)";
+    } else {
+        targetWeight = 28;
+        tolerance = 2;
+        question = "Perfect balance at 28kg (±2kg tolerance)";
+    }
+    
+    const weights = document.createElement('div');
+    weights.style.display = 'flex';
+    weights.style.justifyContent = 'center';
+    weights.style.gap = '15px';
+    weights.style.marginTop = '30px';
+    
+    gameState.currentPuzzleState = { 
+        leftWeight: 0, 
+        rightWeight: 0, 
+        balanced: false,
+        targetWeight: targetWeight,
+        tolerance: tolerance
+    };
+    
+    for (let i = 1; i <= 6; i++) {
+        const weight = document.createElement('button');
+        weight.className = 'btn btn-primary';
+        weight.textContent = `${i}kg`;
+        weight.onclick = () => addWeight(i, scale);
+        weights.appendChild(weight);
+    }
+    
+    container.appendChild(weights);
+    board.appendChild(container);
+    
+    const info = document.createElement('div');
+    info.id = 'balanceInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '30px';
+    info.style.color = '#4ecdc4';
+    info.innerHTML = `<p><strong>${difficultyLevel.toUpperCase()} MODE:</strong> ${question}</p><p>Current: 0kg</p>`;
+    board.appendChild(info);
+}
+
+function addWeight(weight, scale) {
+    gameState.currentPuzzleState.leftWeight += weight;
+    
+    const target = gameState.currentPuzzleState.targetWeight;
+    const tolerance = gameState.currentPuzzleState.tolerance;
+    
+    if (Math.abs(gameState.currentPuzzleState.leftWeight - target) <= tolerance) {
+        scale.style.transform = 'rotate(0deg)';
+        gameState.currentPuzzleState.balanced = true;
+    } else {
+        scale.style.transform = `rotate(${(gameState.currentPuzzleState.leftWeight - target) * 2}deg)`;
+        gameState.currentPuzzleState.balanced = false;
+    }
+    
+    const info = document.getElementById('balanceInfo');
+    if (info) {
+        const lines = info.innerHTML.split('</p>');
+        lines[1] = `<p>Current: ${gameState.currentPuzzleState.leftWeight}kg`;
+        info.innerHTML = lines.join('</p>');
+    }
+}
+
+function validateBalance() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    const weight = gameState.currentPuzzleState.leftWeight;
+    const target = gameState.currentPuzzleState.targetWeight;
+    const tolerance = gameState.currentPuzzleState.tolerance;
+    const balanced = Math.abs(weight - target) <= tolerance;
+    console.log('Balance validation - Weight:', weight, 'Target:', target, '±', tolerance, 'Balanced:', balanced);
+    
+    return balanced;
+}
+
+
+        // Fix 9: Oracle of Proteus - Exact pairs and rotating symbols
+function createMatch3Puzzle(board) {
+    const grid = document.createElement('div');
+    grid.className = 'match3-grid';
+    
+    const symbols = ['💎', '⭐', '🔮', '👑', '⚡'];
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#a8dadc', '#ff9ff3'];
+    
+    const settings = getDifficultySettings();
+    const required = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 6 : 8;
+    gameState.currentPuzzleState = { 
+        selected: null, 
+        matches: 0, 
+        tiles: [], 
+        requiredMatches: required,
+        rotationInterval: null
+    };
+    
+    for (let i = 0; i < 64; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'match3-tile';
+        const symbolIndex = Math.floor(Math.random() * symbols.length);
+        tile.textContent = symbols[symbolIndex];
+        tile.style.background = colors[symbolIndex];
+        tile.dataset.index = i;
+        tile.dataset.symbol = symbolIndex;
+        tile.dataset.row = Math.floor(i / 8);
+        tile.dataset.col = i % 8;
+        
+        tile.onclick = () => selectTile(tile);
+        
+        grid.appendChild(tile);
+        gameState.currentPuzzleState.tiles.push(tile);
+    }
+    
+    board.appendChild(grid);
+    
+    // Start rotation for medium and hard modes
+    if (difficultyLevel !== 'easy') {
+        gameState.currentPuzzleState.rotationInterval = setInterval(() => {
+            rotateSymbols();
+        }, 5000);
+    }
+    
+    const info = document.createElement('div');
+    info.id = 'match3Info';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#ff9ff3';
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Match EXACTLY ${required} pairs. No more, no less!</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Match EXACTLY ${required} pairs. Symbols rotate clockwise/counter-clockwise!</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Match EXACTLY ${required} pairs. Fast rotation with chaos!</p>`;
+    }
+    helpText += `<p>Matches: 0 / ${required}</p>`;
+    info.innerHTML = helpText;
+    board.appendChild(info);
+}
+
+function rotateSymbols() {
+    if (!gameState.currentPuzzleState || !gameState.currentPuzzleState.tiles) return;
+    
+    const tiles = gameState.currentPuzzleState.tiles;
+    const size = 8; // 8x8 grid
+    
+    // Rotate ring by ring with alternating directions
+    for (let ring = 0; ring < Math.floor(size / 2); ring++) {
+        const clockwise = (ring % 2 === 0); // Even rings clockwise, odd counter-clockwise
+        rotateRing(tiles, ring, size, clockwise);
+    }
+}
+
+function rotateRing(tiles, ring, size, clockwise) {
+    const symbols = ['💎', '⭐', '🔮', '👑', '⚡'];
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#a8dadc', '#ff9ff3'];
+    
+    // Collect positions and symbols for this ring
+    const positions = [];
+    const symbolData = [];
+    
+    // Top edge (left to right)
+    for (let col = ring; col < size - ring; col++) {
+        const idx = ring * size + col;
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbolData.push(tiles[idx].dataset.symbol);
+        }
+    }
+    
+    // Right edge (top to bottom, excluding top-right corner)
+    for (let row = ring + 1; row < size - ring; row++) {
+        const idx = row * size + (size - 1 - ring);
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbolData.push(tiles[idx].dataset.symbol);
+        }
+    }
+    
+    // Bottom edge (right to left, excluding bottom-right corner)
+    for (let col = size - 2 - ring; col >= ring; col--) {
+        const idx = (size - 1 - ring) * size + col;
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbolData.push(tiles[idx].dataset.symbol);
+        }
+    }
+    
+    // Left edge (bottom to top, excluding both corners)
+    for (let row = size - 2 - ring; row > ring; row--) {
+        const idx = row * size + ring;
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbolData.push(tiles[idx].dataset.symbol);
+        }
+    }
+    
+    if (positions.length === 0) return;
+    
+    // Rotate the symbol data
+    let rotatedSymbols;
+    if (clockwise) {
+        // Clockwise: move last to first
+        rotatedSymbols = [symbolData[symbolData.length - 1], ...symbolData.slice(0, -1)];
+    } else {
+        // Counter-clockwise: move first to last
+        rotatedSymbols = [...symbolData.slice(1), symbolData[0]];
+    }
+    
+    // Apply rotated symbols back to tiles
+    positions.forEach((pos, i) => {
+        if (tiles[pos]) {
+            tiles[pos].dataset.symbol = rotatedSymbols[i];
+            tiles[pos].textContent = symbols[rotatedSymbols[i]];
+            tiles[pos].style.background = colors[rotatedSymbols[i]];
+        }
+    });
+}
+
+
+
+function selectTile(tile) {
+    if (tile.style.opacity === '0.3') return;
+    
+    if (gameState.currentPuzzleState.selected) {
+        gameState.currentPuzzleState.selected.classList.remove('selected');
+        
+        if (tile.dataset.symbol === gameState.currentPuzzleState.selected.dataset.symbol && 
+            tile !== gameState.currentPuzzleState.selected) {
+            tile.style.opacity = '0.3';
+            gameState.currentPuzzleState.selected.style.opacity = '0.3';
+            gameState.currentPuzzleState.matches++;
+            
+            const info = document.getElementById('match3Info');
+            if (info) {
+                const lines = info.innerHTML.split('</p>');
+                lines[lines.length - 2] = `<p>Matches: ${gameState.currentPuzzleState.matches} / ${gameState.currentPuzzleState.requiredMatches}`;
+                info.innerHTML = lines.join('</p>');
+            }
+            
+            console.log('Match found! Total matches:', gameState.currentPuzzleState.matches);
+        }
+        
+        gameState.currentPuzzleState.selected = null;
+    } else {
+        tile.classList.add('selected');
+        gameState.currentPuzzleState.selected = tile;
+    }
+}
+
+function validateMatch3() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    // Stop rotation
+    if (gameState.currentPuzzleState.rotationInterval) {
+        clearInterval(gameState.currentPuzzleState.rotationInterval);
+    }
+    
+    const matches = gameState.currentPuzzleState.matches;
+    const required = gameState.currentPuzzleState.requiredMatches;
+    console.log('Match3 validation - Matches:', matches, 'Required:', required);
+    
+    // Must match EXACTLY the required number
+    return matches === required;
+}
+
+
+// COMPLETE REPLACEMENT - Fix createMusicMemory for Oracle of Echo
+function createMusicMemory(board) {
+    const container = document.createElement('div');
+    container.className = 'music-buttons';
+    
+    const notes = ['🔴', '🟢', '🔵', '🟡'];
+    const colors = ['#ff6b6b', '#4ecdc4', '#667eea', '#ffd700'];
+    const frequencies = [523.25, 659.25, 783.99, 880.00]; // C, E, G, A
+    
+    gameState.currentPuzzleState = { 
+        sequence: [], 
+        playerSequence: [], 
+        round: 0, 
+        noteFreqs: frequencies,
+        isPlaying: false
+    };
+    
+    notes.forEach((note, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'music-btn';
+        btn.textContent = note;
+        btn.style.background = colors[index];
+        btn.dataset.note = index;
+        
+        btn.onclick = function() {
+            // Don't allow clicks while sequence is playing
+            if (gameState.currentPuzzleState.isPlaying) {
+                showAIResponse("Wait for the sequence to finish!");
+                return;
+            }
+            
+            // Play the note sound
+            playNote(frequencies[index]);
+            
+            // Visual feedback
+            this.classList.add('active');
+            setTimeout(() => this.classList.remove('active'), 300);
+            
+            // Record player's choice
+            gameState.currentPuzzleState.playerSequence.push(index);
+            
+            // Check if player completed the sequence
+            if (gameState.currentPuzzleState.playerSequence.length === gameState.currentPuzzleState.sequence.length) {
+                const correct = gameState.currentPuzzleState.sequence.every((n, i) => 
+                    n === gameState.currentPuzzleState.playerSequence[i]
+                );
+                
+                if (correct) {
+                    gameState.currentPuzzleState.round++;
+                    const required = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+                    
+                    updateEchoInfo();
+                    
+                    if (gameState.currentPuzzleState.round >= required) {
+                        showAIResponse("All sequences complete! Click Submit Answer!");
+                    } else {
+                        showAIResponse(`Round ${gameState.currentPuzzleState.round} complete! Next sequence coming...`);
+                        setTimeout(() => playSequence(), 1000);
+                    }
+                } else {
+                    showAIResponse("Echo distorts: 'Wrong pattern! Listen again.'");
+                    gameState.currentPuzzleState.playerSequence = [];
+                    setTimeout(() => playSequence(), 1000);
+                }
+            }
+        };
+        
+        container.appendChild(btn);
+    });
+    
+    board.appendChild(container);
+    
+    // Add instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(102,126,234,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(102,126,234,0.5)';
+    const required = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+    instructions.innerHTML = `
+        <h4 style="color: #667eea; margin-bottom: 10px;">🎵 Oracle of Echo - Sound Memory Challenge</h4>
+        <p style="color: #d0d0d0; font-size: 0.95em; line-height: 1.6;">
+            <strong style="color: #667eea;">Goal:</strong> Complete ${required} rounds of musical sequences<br>
+            <strong style="color: #667eea;">How to Play:</strong><br>
+            • Watch and listen as Echo plays a sequence of notes<br>
+            • Each colored button produces a unique musical note<br>
+            • After the sequence plays, repeat it by clicking the buttons in order<br>
+            • Each round adds one more note to the sequence<br>
+            • Complete all ${required} rounds to win<br>
+            <strong style="color: #ffd700;">🔊 Make sure your sound is ON!</strong>
+        </p>
+    `;
+    board.insertBefore(instructions, container);
+    
+    const info = document.createElement('div');
+    info.id = 'echoInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '30px';
+    info.style.color = '#667eea';
+    updateEchoInfo();
+    board.appendChild(info);
+    
+    // Start first sequence after a delay
+    setTimeout(() => {
+        showAIResponse("Watch and listen carefully...");
+        setTimeout(() => playSequence(), 1000);
+    }, 1500);
+}
+
+function playSequence() {
+    if (!gameState.currentPuzzleState) return;
+    
+    gameState.currentPuzzleState.isPlaying = true;
+    gameState.currentPuzzleState.sequence.push(Math.floor(Math.random() * 4));
+    gameState.currentPuzzleState.playerSequence = [];
+    
+    const buttons = document.querySelectorAll('.music-btn');
+    
+    gameState.currentPuzzleState.sequence.forEach((note, i) => {
+        setTimeout(() => {
+            playNote(gameState.currentPuzzleState.noteFreqs[note]);
+            buttons[note].classList.add('active');
+            setTimeout(() => {
+                buttons[note].classList.remove('active');
+                
+                // If this was the last note, allow player input
+                if (i === gameState.currentPuzzleState.sequence.length - 1) {
+                    setTimeout(() => {
+                        gameState.currentPuzzleState.isPlaying = false;
+                        showAIResponse("Your turn! Repeat the sequence.");
+                    }, 300);
+                }
+            }, 400);
+        }, i * 800);
+    });
+}
+
+function updateEchoInfo() {
+    const info = document.getElementById('echoInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    const required = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+    
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Complete ${required} rounds (short sequences)</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Complete ${required} rounds (medium sequences)</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Complete ${required} rounds (long sequences)</p>`;
+    }
+    
+    const roundColor = state.round >= required ? '#4ecdc4' : '#667eea';
+    helpText += `<p style="color: ${roundColor}; font-size: 1.3em; font-weight: bold; margin-top: 10px;">
+        Rounds Completed: ${state.round} / ${required}
+    </p>`;
+    
+    helpText += `<p style="color: #ffd700; font-size: 1.1em; margin-top: 5px;">
+        Current Sequence Length: ${state.sequence.length} notes
+    </p>`;
+    
+    if (state.round >= required) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+            ALL ROUNDS COMPLETE! CLICK SUBMIT ANSWER!
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+        // COMPLETE REPLACEMENT of createJigsawPuzzle for Oracle of Selene
+function createJigsawPuzzle(board) {
+    const canvas = document.createElement('div');
+    canvas.className = 'jigsaw-canvas';
+    
+    const pieces = ['🌙', '✨', '🌟', '💫', '⭐', '🌠', '☄️', '🪐'];
+    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#a8edea', '#fed6e3'];
+    
+    let totalPieces, pairsNeeded;
+    
+    if (difficultyLevel === 'easy') {
+        totalPieces = 12;
+        pairsNeeded = 4; // Need 4 pairs, leaving 4 unpaired
+    } else if (difficultyLevel === 'medium') {
+        totalPieces = 18;
+        pairsNeeded = 6; // Need 6 pairs, leaving 6 unpaired
+    } else {
+        totalPieces = 24;
+        pairsNeeded = 8; // Need 8 pairs, leaving 8 unpaired
+    }
+    
+    gameState.currentPuzzleState = { 
+        placed: 0, 
+        target: pairsNeeded,
+        selectedPiece: null,
+        pieces: []
+    };
+    
+    // Create pieces - mix of pairs and singles
+    const pieceData = [];
+    
+    // Add pairs (2 of each symbol)
+    for (let i = 0; i < pairsNeeded; i++) {
+        const symbol = pieces[i % pieces.length];
+        pieceData.push(symbol, symbol);
+    }
+    
+    // Add unpaired pieces (1 of each symbol)
+    for (let i = 0; i < (totalPieces - pairsNeeded * 2); i++) {
+        pieceData.push(pieces[(pairsNeeded + i) % pieces.length]);
+    }
+    
+    // Shuffle
+    for (let i = pieceData.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pieceData[i], pieceData[j]] = [pieceData[j], pieceData[i]];
+    }
+    
+    pieceData.forEach((symbol, i) => {
+        const piece = document.createElement('div');
+        piece.className = 'jigsaw-piece';
+        piece.textContent = symbol;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.width = '70px';
+        piece.style.height = '70px';
+        piece.style.left = Math.random() * 480 + 'px';
+        piece.style.top = Math.random() * 300 + 'px';
+        piece.style.fontSize = '2em';
+        piece.style.display = 'flex';
+        piece.style.alignItems = 'center';
+        piece.style.justifyContent = 'center';
+        piece.dataset.symbol = symbol;
+        piece.dataset.index = i;
+        
+        piece.onclick = function() {
+            handleJigsawClick(this);
+        };
+        
+        canvas.appendChild(piece);
+        gameState.currentPuzzleState.pieces.push(piece);
+    });
+    
+    board.appendChild(canvas);
+    
+    // Add instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(138,43,226,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(138,43,226,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #764ba2; margin-bottom: 10px;">🌙 How to Play:</h4>
+        <p style="color: #d0d0d0; font-size: 0.95em; line-height: 1.6;">
+            • Click two pieces with matching symbols to pair them<br>
+            • Find exactly ${pairsNeeded} pairs to win<br>
+            • <strong>Warning:</strong> Some fragments are unique and cannot be paired!<br>
+            • Selene's dream fragments morph - not everything has a match<br>
+            • Total pieces: ${totalPieces} | Pairs needed: ${pairsNeeded} | Unpaired: ${totalPieces - pairsNeeded * 2}
+        </p>
+    `;
+    board.insertBefore(instructions, canvas);
+    
+    const info = document.createElement('div');
+    info.id = 'jigsawInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#764ba2';
+    updateJigsawInfo();
+    board.appendChild(info);
+}
+
+function handleJigsawClick(piece) {
+    if (piece.style.opacity === '0.3') return;
+    
+    if (!gameState.currentPuzzleState.selectedPiece) {
+        // First piece selected
+        piece.style.border = '4px solid #ffd700';
+        piece.style.transform = 'scale(1.1)';
+        gameState.currentPuzzleState.selectedPiece = piece;
+    } else {
+        // Second piece selected
+        const firstPiece = gameState.currentPuzzleState.selectedPiece;
+        
+        if (piece === firstPiece) {
+            // Same piece clicked - deselect
+            firstPiece.style.border = '1px solid rgba(255,255,255,0.3)';
+            firstPiece.style.transform = 'scale(1)';
+            gameState.currentPuzzleState.selectedPiece = null;
+            return;
+        }
+        
+        if (piece.dataset.symbol === firstPiece.dataset.symbol) {
+            // Match found!
+            piece.style.opacity = '0.3';
+            firstPiece.style.opacity = '0.3';
+            piece.style.border = '3px solid #4ecdc4';
+            firstPiece.style.border = '3px solid #4ecdc4';
+            piece.style.transform = 'scale(1)';
+            firstPiece.style.transform = 'scale(1)';
+            
+            gameState.currentPuzzleState.placed++;
+            updateJigsawInfo();
+            
+            console.log('Jigsaw pair matched. Total:', gameState.currentPuzzleState.placed);
+            
+            if (gameState.currentPuzzleState.placed >= gameState.currentPuzzleState.target) {
+                showAIResponse(`All ${gameState.currentPuzzleState.target} pairs found! Click Submit Answer!`);
+            }
+        } else {
+            // No match
+            firstPiece.style.border = '1px solid rgba(255,255,255,0.3)';
+            firstPiece.style.transform = 'scale(1)';
+            showAIResponse("Fragments don't match! Try again.");
+        }
+        
+        gameState.currentPuzzleState.selectedPiece = null;
+    }
+}
+
+function updateJigsawInfo() {
+    const info = document.getElementById('jigsawInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Find ${state.target} matching pairs</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Find ${state.target} pairs among morphing fragments</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Find ${state.target} pairs in nightmare sequences</p>`;
+    }
+    
+    const pairsColor = state.placed >= state.target ? '#4ecdc4' : '#764ba2';
+    helpText += `<p style="color: ${pairsColor}; font-size: 1.3em; font-weight: bold; margin-top: 10px;">
+        Pairs Found: ${state.placed} / ${state.target}
+    </p>`;
+    
+    if (state.placed >= state.target) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+            ✨ ALL PAIRS ASSEMBLED! CLICK SUBMIT ANSWER! ✨
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+        // Fix 10: Oracle of DelphiX - 4-letter words validation
+function createWordGrid(board) {
+    const grid = document.createElement('div');
+    grid.className = 'word-grid';
+    
+    const validWords = ['MYTH', 'HERO', 'GODS', 'FATE', 'WARS', 'POLIS', 'ORACLE', 'WISDOM', 'BATTLE', 'SWORD'];
+    const letters = validWords.join('').split('');
+    
+    const settings = getDifficultySettings();
+    const required = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+    gameState.currentPuzzleState = { 
+        selected: [], 
+        words: 0, 
+        requiredWords: required,
+        validWords: validWords,
+        foundWords: []
+    };
+    
+    for (let i = 0; i < 100; i++) {
+        const tile = document.createElement('div');
+        tile.className = 'word-tile';
+        tile.textContent = i < letters.length ? letters[i] : String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        tile.dataset.index = i;
+        tile.dataset.letter = tile.textContent;
+        
+        tile.onclick = function() {
+            if (this.style.opacity === '0.3') return;
+            
+            if (this.classList.contains('selected')) {
+                this.classList.remove('selected');
+                gameState.currentPuzzleState.selected = gameState.currentPuzzleState.selected.filter(s => s !== i);
+            } else {
+                this.classList.add('selected');
+                gameState.currentPuzzleState.selected.push(i);
+                
+                if (gameState.currentPuzzleState.selected.length === 4) {
+                    checkWord();
+                }
+            }
+        };
+        
+        grid.appendChild(tile);
+    }
+    
+    board.appendChild(grid);
+    
+    const info = document.createElement('div');
+    info.id = 'wordInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#4facfe';
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Form EXACTLY ${required} valid 4-letter words. Click 4 letters, must be a real word!</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Form EXACTLY ${required} valid 4-letter words. DelphiX predicts some choices!</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Form EXACTLY ${required} valid 4-letter words. Outsmart prophecy!</p>`;
+    }
+    helpText += `<p>Valid Words: 0 / ${required}</p>`;
+    info.innerHTML = helpText;
+    board.appendChild(info);
+}
+
+function checkWord() {
+    const selectedIndices = gameState.currentPuzzleState.selected;
+    const tiles = document.querySelectorAll('.word-tile');
+    let word = '';
+    
+    selectedIndices.forEach(idx => {
+        word += tiles[idx].dataset.letter;
+    });
+    
+    console.log('Checking word:', word);
+    
+    const validWords = ['MYTH', 'HERO', 'GODS', 'FATE', 'WARS', 'STAR', 'MOON', 'ZEUS', 'ARES', 'TIME'];
+    
+    if (validWords.includes(word) && !gameState.currentPuzzleState.foundWords.includes(word)) {
+        // Valid word!
+        gameState.currentPuzzleState.words++;
+        gameState.currentPuzzleState.foundWords.push(word);
+        
+        selectedIndices.forEach(idx => {
+            tiles[idx].style.opacity = '0.3';
+            tiles[idx].classList.remove('selected');
+        });
+        
+        const info = document.getElementById('wordInfo');
+        if (info) {
+            const lines = info.innerHTML.split('</p>');
+            lines[lines.length - 2] = `<p>Valid Words: ${gameState.currentPuzzleState.words} / ${gameState.currentPuzzleState.requiredWords}`;
+            info.innerHTML = lines.join('</p>');
+        }
+        
+        showAIResponse(`Valid word found: ${word}!`);
+    } else {
+        // Invalid word
+        selectedIndices.forEach(idx => {
+            tiles[idx].classList.remove('selected');
+        });
+        showAIResponse(`"${word}" is not a valid word. Try again!`);
+    }
+    
+    gameState.currentPuzzleState.selected = [];
+}
+
+function validateWordGrid() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    const words = gameState.currentPuzzleState.words;
+    const required = gameState.currentPuzzleState.requiredWords;
+    console.log('Word Grid validation - Words:', words, 'Required:', required);
+    
+    // Must form EXACTLY the required number of valid words
+    return words === required;
+}
+
+
+// COMPLETE REPLACEMENT - Oracle of Typhon (Chaos with Ring Rotation)
+function createChaosPuzzle(board) {
+    const container = document.createElement('div');
+    container.style.textAlign = 'center';
+    
+    const chaosText = document.createElement('div');
+    chaosText.style.fontSize = '1.5em';
+    chaosText.style.color = '#ff6b6b';
+    chaosText.style.marginBottom = '30px';
+    chaosText.textContent = 'CHAOS REIGNS — MATCH PAIRS WHILE SYMBOLS ROTATE';
+    container.appendChild(chaosText);
+    
+    const settings = getDifficultySettings();
+    const required = difficultyLevel === 'easy' ? 8 : difficultyLevel === 'medium' ? 12 : 15;
+    
+    const miniPuzzle = document.createElement('div');
+    miniPuzzle.style.display = 'grid';
+    miniPuzzle.style.gridTemplateColumns = 'repeat(8, 1fr)';
+    miniPuzzle.style.gap = '8px';
+    miniPuzzle.style.maxWidth = '500px';
+    miniPuzzle.style.margin = '0 auto';
+    miniPuzzle.id = 'typhoGrid';
+    
+    const symbols = ['⚡', '🔥', '💎', '⭐', '👑', '🔮', '💫', '🌟'];
+    const tiles = [];
+    
+    // Create pairs
+    for (let i = 0; i < required; i++) {
+        const symbol = symbols[i % symbols.length];
+        tiles.push(symbol, symbol);
+    }
+    
+    // Fill remaining tiles
+    while (tiles.length < 64) {
+        tiles.push(symbols[Math.floor(Math.random() * symbols.length)]);
+    }
+    
+    // Shuffle
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    
+    gameState.currentPuzzleState = { 
+        chaosCompleted: 0, 
+        chaosTarget: required,
+        selectedTile: null,
+        tiles: [],
+        rotationInterval: null
+    };
+    
+    tiles.forEach((symbol, i) => {
+        const tile = document.createElement('div');
+        tile.style.aspectRatio = '1';
+        tile.style.background = '#2a2a4a';
+        tile.style.borderRadius = '8px';
+        tile.style.cursor = 'pointer';
+        tile.style.transition = 'all 0.3s ease';
+        tile.style.display = 'flex';
+        tile.style.alignItems = 'center';
+        tile.style.justifyContent = 'center';
+        tile.style.fontSize = '1.8em';
+        tile.style.border = '2px solid rgba(255,255,255,0.2)';
+        tile.textContent = symbol;
+        tile.dataset.symbol = symbol;
+        tile.dataset.index = i;
+        tile.dataset.row = Math.floor(i / 8);
+        tile.dataset.col = i % 8;
+        
+        tile.onclick = function() {
+            handleChaosTileClick(this);
+        };
+        
+        miniPuzzle.appendChild(tile);
+        gameState.currentPuzzleState.tiles.push(tile);
+    });
+    
+    container.appendChild(miniPuzzle);
+    board.appendChild(container);
+    
+    // Start ring rotation
+    gameState.currentPuzzleState.rotationInterval = setInterval(() => {
+        rotateTyphonRings();
+    }, difficultyLevel === 'easy' ? 6000 : difficultyLevel === 'medium' ? 4000 : 2500);
+    
+    // Add instructions
+    const instructions = document.createElement('div');
+    instructions.style.background = 'rgba(255,107,107,0.2)';
+    instructions.style.padding = '15px';
+    instructions.style.borderRadius = '10px';
+    instructions.style.marginBottom = '20px';
+    instructions.style.border = '2px solid rgba(255,107,107,0.5)';
+    instructions.innerHTML = `
+        <h4 style="color: #ff6b6b; margin-bottom: 10px;">⚡ Oracle of Typhon - Chaos Challenge</h4>
+        <p style="color: #d0d0d0; font-size: 0.95em; line-height: 1.6;">
+            <strong style="color: #ff6b6b;">Goal:</strong> Match exactly ${required} pairs of symbols<br>
+            <strong style="color: #ff6b6b;">Chaos Effect:</strong> Symbols rotate ring by ring<br>
+            • Outermost ring rotates clockwise<br>
+            • Next inner ring rotates counter-clockwise<br>
+            • Pattern alternates for each ring<br>
+            • Click two matching symbols to pair them<br>
+            <strong style="color: #ffd700;">Match EXACTLY ${required} pairs to win!</strong>
+        </p>
+    `;
+    board.insertBefore(instructions, container);
+    
+    const info = document.createElement('div');
+    info.id = 'chaosInfo';
+    info.style.textAlign = 'center';
+    info.style.marginTop = '20px';
+    info.style.color = '#ff6b6b';
+    updateChaosInfo();
+    board.appendChild(info);
+}
+
+function rotateTyphonRings() {
+    if (!gameState.currentPuzzleState || !gameState.currentPuzzleState.tiles) return;
+    
+    const tiles = gameState.currentPuzzleState.tiles;
+    const size = 8; // 8x8 grid
+    
+    // Rotate each ring with alternating directions
+    for (let ring = 0; ring < Math.floor(size / 2); ring++) {
+        const clockwise = (ring % 2 === 0); // Even rings clockwise, odd counter-clockwise
+        rotateTyphonRing(tiles, ring, size, clockwise);
+    }
+}
+
+function rotateTyphonRing(tiles, ring, size, clockwise) {
+    // Collect positions and symbols for this ring
+    const positions = [];
+    const symbols = [];
+    
+    // Top edge (left to right)
+    for (let col = ring; col < size - ring; col++) {
+        const idx = ring * size + col;
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbols.push(tiles[idx].textContent);
+        }
+    }
+    
+    // Right edge (top to bottom, excluding top-right corner)
+    for (let row = ring + 1; row < size - ring; row++) {
+        const idx = row * size + (size - 1 - ring);
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbols.push(tiles[idx].textContent);
+        }
+    }
+    
+    // Bottom edge (right to left, excluding bottom-right corner)
+    if (size - 1 - ring > ring) {
+        for (let col = size - 2 - ring; col >= ring; col--) {
+            const idx = (size - 1 - ring) * size + col;
+            if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+                positions.push(idx);
+                symbols.push(tiles[idx].textContent);
+            }
+        }
+    }
+    
+    // Left edge (bottom to top, excluding both corners)
+    for (let row = size - 2 - ring; row > ring; row--) {
+        const idx = row * size + ring;
+        if (tiles[idx] && tiles[idx].style.opacity !== '0.3') {
+            positions.push(idx);
+            symbols.push(tiles[idx].textContent);
+        }
+    }
+    
+    if (positions.length === 0) return;
+    
+    // Rotate the symbols
+    let rotatedSymbols;
+    if (clockwise) {
+        rotatedSymbols = [symbols[symbols.length - 1], ...symbols.slice(0, -1)];
+    } else {
+        rotatedSymbols = [...symbols.slice(1), symbols[0]];
+    }
+    
+    // Apply rotated symbols back to tiles
+    positions.forEach((pos, i) => {
+        if (tiles[pos]) {
+            tiles[pos].textContent = rotatedSymbols[i];
+            tiles[pos].dataset.symbol = rotatedSymbols[i];
+        }
+    });
+}
+
+function updateChaosInfo() {
+    const info = document.getElementById('chaosInfo');
+    if (!info) return;
+    
+    const state = gameState.currentPuzzleState;
+    
+    let helpText = '';
+    if (difficultyLevel === 'easy') {
+        helpText = `<p><strong>EASY MODE:</strong> Match exactly ${state.chaosTarget} pairs (slow rotation)</p>`;
+    } else if (difficultyLevel === 'medium') {
+        helpText = `<p><strong>MEDIUM MODE:</strong> Match exactly ${state.chaosTarget} pairs (medium rotation)</p>`;
+    } else {
+        helpText = `<p><strong>HARD MODE:</strong> Match exactly ${state.chaosTarget} pairs (fast chaos!)</p>`;
+    }
+    
+    const pairsColor = state.chaosCompleted >= state.chaosTarget ? '#4ecdc4' : '#ff6b6b';
+    helpText += `<p style="color: ${pairsColor}; font-size: 1.3em; font-weight: bold; margin-top: 10px;">
+        Pairs Matched: ${state.chaosCompleted} / ${state.chaosTarget}
+    </p>`;
+    
+    if (state.chaosCompleted >= state.chaosTarget) {
+        helpText += `<p style="color: #4ecdc4; font-size: 1.1em; font-weight: bold; margin-top: 10px; animation: pulse 1s infinite;">
+            ✨ CHAOS CONQUERED! CLICK SUBMIT ANSWER! ✨
+        </p>`;
+    }
+    
+    info.innerHTML = helpText;
+}
+
+function validateChaos() {
+    if (!gameState.currentPuzzleState) {
+        console.log('CHAOS: No puzzle state');
+        return false;
+    }
+    
+    // Stop rotation
+    if (gameState.currentPuzzleState.rotationInterval) {
+        clearInterval(gameState.currentPuzzleState.rotationInterval);
+    }
+    
+    const completed = gameState.currentPuzzleState.chaosCompleted;
+    const required = gameState.currentPuzzleState.chaosTarget;
+    
+    console.log('CHAOS VALIDATION:');
+    console.log('  Completed:', completed);
+    console.log('  Required:', required);
+    console.log('  Result:', completed === required);
+    
+    return completed === required;
+}
+
+
+function handleChaosTileClick(tile) {
+    if (tile.style.opacity === '0.3') return;
+    
+    if (!gameState.currentPuzzleState.selectedTile) {
+        // First tile selected
+        tile.style.border = '4px solid #ffd700';
+        gameState.currentPuzzleState.selectedTile = tile;
+    } else {
+        // Second tile selected
+        const firstTile = gameState.currentPuzzleState.selectedTile;
+        
+        if (tile === firstTile) {
+            // Same tile clicked
+            firstTile.style.border = '2px solid rgba(255,255,255,0.2)';
+            gameState.currentPuzzleState.selectedTile = null;
+            return;
+        }
+        
+        if (tile.dataset.symbol === firstTile.dataset.symbol) {
+            // Match found!
+            tile.style.opacity = '0.3';
+            firstTile.style.opacity = '0.3';
+            tile.style.border = '2px solid #4ecdc4';
+            firstTile.style.border = '2px solid #4ecdc4';
+            
+            gameState.currentPuzzleState.chaosCompleted++;
+            
+            const info = document.getElementById('chaosInfo');
+            if (info) {
+                const lines = info.innerHTML.split('</p>');
+                lines[lines.length - 2] = `<p>Pairs Matched: ${gameState.currentPuzzleState.chaosCompleted} / ${gameState.currentPuzzleState.chaosTarget}`;
+                info.innerHTML = lines.join('</p>');
+            }
+            
+            console.log('Chaos pair matched. Total:', gameState.currentPuzzleState.chaosCompleted);
+        } else {
+            // No match
+            firstTile.style.border = '2px solid rgba(255,255,255,0.2)';
+        }
+        
+        gameState.currentPuzzleState.selectedTile = null;
+    }
+}
+
+function validateChaos() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    const completed = gameState.currentPuzzleState.chaosCompleted;
+    const required = gameState.currentPuzzleState.chaosTarget;
+    console.log('Chaos validation - Completed:', completed, 'Required:', required);
+    
+    // Must match EXACTLY the required number of pairs
+    return completed === required;
+}
+
+        function startTimer(oracle) {
+            const timerFill = document.getElementById('timerFill');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const settings = getDifficultySettings();
+            
+            let baseDuration;
+            if (oracle.id === 1) baseDuration = 120;
+            else if (oracle.id === 2) baseDuration = 90;
+            else baseDuration = 180;
+            
+            const duration = baseDuration * settings.timerMultiplier;
+            gameState.timeRemaining = duration;
+            timerDisplay.textContent = duration;
+            
+            const interval = setInterval(() => {
+                gameState.timeRemaining--;
+                timerDisplay.textContent = gameState.timeRemaining;
+                const percentage = (gameState.timeRemaining / duration) * 100;
+                timerFill.style.width = percentage + '%';
+                
+                playTick();
+                
+                if (gameState.timeRemaining <= 0) {
+                    clearInterval(interval);
+                    document.getElementById('submitBtn').disabled = true;
+                    showAIResponse(`${oracle.name} declares: "Time has run out. You have failed this trial."`);
+                    setTimeout(() => {
+                        alert('Time expired! Try again.');
+                        exitGame();
+                    }, 2000);
+                }
+            }, 1000);
+            
+            gameState.currentTimer = interval;
+        }
+
+        // COMPLETE REPLACEMENT of submitAnswer function
+function submitAnswer() {
+    if (gameState.currentTimer) {
+        clearInterval(gameState.currentTimer);
+    }
+    
+    document.getElementById('submitBtn').disabled = true;
+    
+    console.log('=== SUBMIT ANSWER PRESSED ===');
+    console.log('Current Oracle ID:', currentOracle.id);
+    console.log('Current Puzzle State:', gameState.currentPuzzleState);
+    
+    const success = validateAnswer();
+    
+    console.log('Validation Result:', success);
+    
+    if (success) {
+        showAIResponse(`${currentOracle.name} concedes: "You have proven your worth. My domain is yours!"`);
+        setTimeout(() => victorySequence(), 1500);
+    } else {
+        showAIResponse(`${currentOracle.name} mocks: "Your answer is insufficient. Requirements not met!"`);
+        
+        // Show what was needed
+        let requirement = getRequirementMessage();
+        setTimeout(() => {
+            alert('FAILED! ' + requirement + '\n\nTry again.');
+            exitGame();
+        }, 2000);
+    }
+}
+
+        function getRequirementMessage() {
+            const oracleId = currentOracle.id;
+            const settings = getDifficultySettings();
+            
+            switch(oracleId) {
+                case 1:
+                    return `You need to fill ${gameState.currentPuzzleState.targetMoves} cells with numbers.`;
+                case 2:
+                    return `You need to pop ${gameState.currentPuzzleState.targetShots} bubbles. You popped: ${gameState.currentPuzzleState.shots}`;
+                case 3:
+                    return `You need to find ${gameState.currentPuzzleState.target} objects.`;
+                case 4:
+                    return `You need to reach the star goal (or click any tile in Easy mode).`;
+                case 5:
+                    return `You need to place ${gameState.currentPuzzleState.target} blocks. You placed: ${gameState.currentPuzzleState.placed}`;
+                case 6:
+                    const reqMoves = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+                    return `You need to make ${reqMoves} chess moves. You made: ${gameState.currentPuzzleState.moves}`;
+                case 7:
+                    return `You need to defeat ${gameState.currentPuzzleState.target} enemies. You defeated: ${gameState.currentPuzzleState.defeated}`;
+                case 8:
+                    return `You need to balance scales to 18-24kg. Your weight: ${gameState.currentPuzzleState.leftWeight}kg`;
+                case 9:
+                    const reqMatches = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 6 : 8;
+                    return `You need ${reqMatches} matches. You made: ${gameState.currentPuzzleState.matches}`;
+                case 10:
+                    const reqRounds = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+                    return `You need to complete ${reqRounds} rounds. You completed: ${gameState.currentPuzzleState.round}`;
+                case 11:
+                    return `You need to place ${gameState.currentPuzzleState.target} jigsaw pieces. You placed: ${gameState.currentPuzzleState.placed}`;
+                case 12:
+                    const reqWords = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+                    return `You need to form ${reqWords} words. You formed: ${gameState.currentPuzzleState.words}`;
+                case 13:
+                    const reqChaos = difficultyLevel === 'easy' ? 8 : difficultyLevel === 'medium' ? 12 : 15;
+                    return `You need to click ${reqChaos} chaos tiles. You clicked: ${gameState.currentPuzzleState.chaosCompleted}`;
+                default:
+                    return 'Requirements not met.';
+            }
+        }
+
+        // COMPLETE REPLACEMENT of validateAnswer function
+function validateAnswer() {
+    const oracleId = currentOracle.id;
+    
+    console.log('=== VALIDATING ORACLE:', oracleId, '===');
+    
+    switch(oracleId) {
+        case 1: // Sudoku
+            return validateSudoku();
+        case 2: // Bubble Shooter
+            return validateBubbleShooter();
+        case 3: // Hidden Objects - NYX
+            return validateHiddenObjects();
+        case 4: // Ice Puzzle
+            return validateIcePuzzle();
+        case 5: // Block Placement
+            return validateBlockPlacement();
+        case 6: // Chess
+            return validateChess();
+        case 7: // Tactical Battle
+            return validateTacticalBattle();
+        case 8: // Balance
+            return validateBalance();
+        case 9: // Match3
+            return validateMatch3();
+        case 10: // Music Memory
+            return validateMusicMemory();
+        case 11: // Jigsaw
+            return validateJigsaw();
+        case 12: // Word Grid
+            return validateWordGrid();
+        case 13: // Chaos
+            return validateChaos();
+        default:
+            return false;
+    }
+}
+
+        function validateSudoku() {
+            if (!gameState.currentPuzzleState) return false;
+            
+            const cells = document.querySelectorAll('.sudoku-cell:not(.fixed)');
+            let filledCount = 0;
+            
+            cells.forEach(cell => {
+                if (cell.textContent && cell.textContent.trim() !== '') {
+                    filledCount++;
+                }
+            });
+            
+            const required = gameState.currentPuzzleState.targetMoves;
+            console.log('Sudoku validation - Filled:', filledCount, 'Required:', required);
+            
+            // Success if filled enough cells
+            return filledCount >= required;
+        }
+
+        f// COMPLETE REPLACEMENT - Oracle of Helios (Bubble Shooter)
+function validateBubbleShooter() {
+    if (!gameState.currentPuzzleState) {
+        console.log('BUBBLE: No puzzle state');
+        return false;
+    }
+    
+    const shots = gameState.currentPuzzleState.shots;
+    const target = gameState.currentPuzzleState.targetShots;
+    
+    console.log('BUBBLE VALIDATION:');
+    console.log('  Shots:', shots);
+    console.log('  Target:', target);
+    console.log('  Result:', shots === target);
+    
+    // Must pop EXACTLY the target number
+    return shots === target;
+}
+
+
+        function validateHiddenObjects() {
+    if (!gameState.currentPuzzleState) {
+        console.log('NYX: No puzzle state');
+        return false;
+    }
+    
+    const found = gameState.currentPuzzleState.found;
+    const target = gameState.currentPuzzleState.target;
+    
+    console.log('NYX VALIDATION:');
+    console.log('  Found:', found);
+    console.log('  Target:', target);
+    console.log('  Result:', found >= target);
+    
+    return found >= target;
+}
+
+        function validateIcePuzzle() {
+            if (!gameState.currentPuzzleState) {
+                gameState.currentPuzzleState = { reachedGoal: false };
+            }
+            
+            const reached = gameState.currentPuzzleState.reachedGoal === true;
+            console.log('Ice Puzzle validation - Reached goal:', reached);
+            
+            // For easy mode, auto-pass if any tiles clicked
+            if (difficultyLevel === 'easy') return true;
+            
+            return reached;
+        }
+
+        // Fix 5: Oracle of Gaia - Proper validation
+function validateBlockPlacement() {
+    if (!gameState.currentPuzzleState) return false;
+    
+    const placed = gameState.currentPuzzleState.placed;
+    const target = gameState.currentPuzzleState.target;
+    console.log('Block Placement validation - Placed:', placed, 'Target:', target);
+    
+    // Must place at least the target number
+    return placed >= target;
+}
+
+
+        function validateChess() {
+            if (!gameState.currentPuzzleState) {
+                gameState.currentPuzzleState = { moves: 0 };
+            }
+            
+            const moves = gameState.currentPuzzleState.moves;
+            const required = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+            console.log('Chess validation - Moves:', moves, 'Required:', required);
+            
+            return moves >= required;
+        }
+
+        function validateTacticalBattle() {
+            if (!gameState.currentPuzzleState) return false;
+            
+            const defeated = gameState.currentPuzzleState.defeated;
+            const target = gameState.currentPuzzleState.target;
+            console.log('Tactical Battle validation - Defeated:', defeated, 'Target:', target);
+            
+            return defeated >= target;
+        }
+
+        function validateBalance() {
+            if (!gameState.currentPuzzleState) {
+                gameState.currentPuzzleState = { leftWeight: 0 };
+            }
+            
+            const weight = gameState.currentPuzzleState.leftWeight;
+            const balanced = Math.abs(weight - 21) < 5;
+            console.log('Balance validation - Weight:', weight, 'Balanced:', balanced);
+            
+            return balanced;
+        }
+
+        function validateMatch3() {
+            if (!gameState.currentPuzzleState) return false;
+            
+            const matches = gameState.currentPuzzleState.matches;
+            const required = difficultyLevel === 'easy' ? 4 : difficultyLevel === 'medium' ? 6 : 8;
+            console.log('Match3 validation - Matches:', matches, 'Required:', required);
+            
+            return matches >= required;
+        }
+
+        function validateMusicMemory() {
+    if (!gameState.currentPuzzleState) {
+        console.log('ECHO: No puzzle state');
+        return false;
+    }
+    
+    const round = gameState.currentPuzzleState.round;
+    const required = difficultyLevel === 'easy' ? 2 : difficultyLevel === 'medium' ? 3 : 4;
+    
+    console.log('ECHO VALIDATION:');
+    console.log('  Rounds:', round);
+    console.log('  Required:', required);
+    console.log('  Result:', round >= required);
+    
+    return round >= required;
+}
+
+        // COMPLETE REPLACEMENT of validateJigsaw function
+function validateJigsaw() {
+    if (!gameState.currentPuzzleState) {
+        console.log('JIGSAW: No puzzle state');
+        return false;
+    }
+    
+    const placed = gameState.currentPuzzleState.placed;
+    const target = gameState.currentPuzzleState.target;
+    
+    console.log('JIGSAW VALIDATION:');
+    console.log('  Pairs:', placed);
+    console.log('  Target:', target);
+    console.log('  Result:', placed >= target);
+    
+    return placed >= target;
+}
+
+        function validateWordGrid() {
+            if (!gameState.currentPuzzleState) {
+                gameState.currentPuzzleState = { words: 0, selected: [] };
+            }
+            
+            const words = gameState.currentPuzzleState.words;
+            const required = difficultyLevel === 'easy' ? 3 : difficultyLevel === 'medium' ? 4 : 5;
+            console.log('Word Grid validation - Words:', words, 'Required:', required);
+            
+            return words >= required;
+        }
+
+        function validateChaos() {
+            if (!gameState.currentPuzzleState) {
+                gameState.currentPuzzleState = { chaosCompleted: 0 };
+            }
+            
+            const completed = gameState.currentPuzzleState.chaosCompleted;
+            const required = difficultyLevel === 'easy' ? 8 : difficultyLevel === 'medium' ? 12 : 15;
+            console.log('Chaos validation - Completed:', completed, 'Required:', required);
+            
+            return completed >= required;
+        }
+
+        function requestHint() {
+            if (gameState.insightTokens <= 0) {
+                alert('No Insight Tokens remaining! Defeat more Oracles to gain tokens.');
+                return;
+            }
+            
+            gameState.insightTokens--;
+            updateStats();
+            
+            const hints = [
+                "Focus on the corners first—they reveal the structure of the puzzle.",
+                "The Oracle's pattern repeats every third move. Use this to predict behavior.",
+                "Balance is key. Don't rush—strategic patience defeats chaos.",
+                "Look for symmetry. The ancient Greeks valued perfect proportion.",
+                "Sometimes the obvious path is a trap. Consider alternative approaches.",
+                "The Oracle's weakness lies in overconfidence. Exploit unexpected moves.",
+                "Combine multiple strategies—single-minded tactics fail against AI opponents.",
+                "Remember previous Oracle abilities can help here. Think synergistically.",
+                "The puzzle morphs based on your actions. Adapt your strategy mid-game.",
+                "Trust your instincts but verify with logic. Intuition and reason together."
+            ];
+            
+            const hint = hints[Math.floor(Math.random() * hints.length)];
+            document.getElementById('hintText').textContent = hint;
+            document.getElementById('hintPanel').classList.add('active');
+            
+            setTimeout(() => {
+                document.getElementById('hintPanel').classList.remove('active');
+            }, 8000);
+        }
+
+        function showAIResponse(text) {
+            const responseDiv = document.getElementById('aiResponse');
+            const responseText = document.getElementById('aiResponseText');
+            responseText.textContent = text;
+            responseDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                responseDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function victorySequence() {
+            if (gameState.currentTimer) {
+                clearInterval(gameState.currentTimer);
+            }
+            
+            currentOracle.defeated = true;
+            gameState.defeatedCount++;
+            gameState.armySize += Math.floor(Math.random() * 50) + 30;
+            gameState.insightTokens += 2;
+            gameState.potions += Math.floor(Math.random() * 3) + 1;
+            gameState.weapons.push(currentOracle.weapon);
+            gameState.armies.push(currentOracle.army);
+            
+            currentOracleIndex++;
+            if (currentOracleIndex < oracles.length) {
+                oracles[currentOracleIndex].status = 'active';
+            }
+            
+            updateStats();
+            
+            const victoryText = document.getElementById('victoryText');
+            victoryText.innerHTML = `
+                <p>You have defeated ${currentOracle.name} and claimed the ${currentOracle.domain}!</p>
+                <p style="margin-top: 15px;">The Oracle submits and joins your cause as a Battle Advisor.</p>
+                <p style="margin-top: 10px; color: #4ecdc4;"><strong>Army Gained:</strong> ${currentOracle.army}</p>
+            `;
+            
+            const rewardsPanel = document.getElementById('rewardsPanel');
+            rewardsPanel.innerHTML = `
+                <div class="reward-item">
+                    <h5>New Army</h5>
+                    <p>${currentOracle.army}</p>
+                </div>
+                <div class="reward-item">
+                    <h5>Mythic Weapon</h5>
+                    <p>${currentOracle.weapon}</p>
+                </div>
+                <div class="reward-item">
+                    <h5>Special Ability</h5>
+                    <p>${currentOracle.ability}</p>
+                </div>
+                <div class="reward-item">
+                    <h5>Rewards</h5>
+                    <p>+2 Insight Tokens<br>+${gameState.potions} Potions</p>
+                </div>
+            `;
+            
+            document.getElementById('victoryModal').classList.add('active');
+            
+            if (gameState.defeatedCount >= 13) {
+                setTimeout(() => {
+                    document.getElementById('victoryModal').classList.remove('active');
+                    document.getElementById('finalModal').classList.add('active');
+                }, 3000);
+            }
+        }
+
+        function closeVictoryModal() {
+            document.getElementById('victoryModal').classList.remove('active');
+            exitGame();
+            renderOracles();
+        }
+
+        function exitGame() {
+            document.getElementById('gameArena').classList.remove('active');
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('submitBtn').disabled = false;
+            if (gameState.currentTimer) {
+                clearInterval(gameState.currentTimer);
+            }
+            currentOracle = null;
+            renderOracles();
+        }
+
+        function updateStats() {
+            document.getElementById('defeatedCount').textContent = gameState.defeatedCount;
+            document.getElementById('armySize').textContent = gameState.armySize;
+            document.getElementById('insightTokens').textContent = gameState.insightTokens;
+            document.getElementById('weaponCount').textContent = gameState.weapons.length;
+            document.getElementById('potionCount').textContent = gameState.potions;
+            
+            const progress = (gameState.defeatedCount / 13) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = `${gameState.defeatedCount} / 13`;
+        }
+
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
