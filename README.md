@@ -12,6 +12,32 @@ Thirteen Oracles of Astraeum is a production-ready AI-powered strategy game impl
 - **Source Code**: https://github.com/SamiraSamrose/Thirteen-Oracles-Of-Astraeum
 - **Video Demo**: https://youtu.be/SKlXMBoyx-8
 
+## Tech Stack
+
+- Languages: Python 3.11, TypeScript, JavaScript, SQL, YAML, JSON, Bash
+- Backend Frameworks: FastAPI, SQLAlchemy, Alembic, Pydantic, AsyncIO
+- Frontend Frameworks: React 18, Vite, Zustand
+- Databases: PostgreSQL 15, Redis 7, Weaviate
+- Message Queue: Apache Kafka, Zookeeper
+- Storage: MinIO (S3-compatible)
+- AI/ML: Ollama, vLLM, LangGraph, LangChain
+- LLM Models: Llama 3, Mistral, DeepSeek, nomic-embed-text
+- Agent Framework: LangGraph, Custom Agent Orchestrator
+- Libraries: aiokafka, redis-py, psycopg2, boto3, minio, weaviate-client, httpx, jose, passlib, jsonschema, prometheus-client
+- Frontend Libraries: Three.js, @react-three/fiber, @react-three/drei, axios, lucide-react
+- WebSocket: Native WebSocket API, FastAPI WebSocket
+- Authentication: JWT (JSON Web Tokens), bcrypt
+- Monitoring: Prometheus, Grafana, Sentry
+- Containerization: Docker, Docker Compose
+- Orchestration: Kubernetes
+- Reverse Proxy: NGINX, Caddy
+- Testing: pytest, FastAPI TestClient
+- DevOps Tools: Alembic (migrations), Git, GitHub Actions
+- APIs: REST API, WebSocket API, Ollama API, MinIO API
+- Data Integrations: Kafka event streams, Redis pub/sub, PostgreSQL ACID transactions, Vector embeddings via Weaviate
+- Datasets: Player session data, Oracle configurations (YAML), Puzzle schemas (JSON), Army unit definitions, Game state snapshots, Agent memory vectors, Conversation histories
+
+
 ## Technical Implementation:
 
 The backend utilizes FastAPI for asynchronous request handling, PostgreSQL for ACID-compliant state persistence, Redis for sub-millisecond cache access and pub/sub messaging, and Kafka for reliable event streaming between services. Each oracle agent maintains episodic memory in Weaviate vector database, enabling semantic retrieval of past interactions for contextual decision-making. WebSocket connections provide real-time state synchronization with React frontend rendering 3D dominion visualizations via Three.js.
@@ -120,11 +146,4 @@ docker-compose up -d
 - [API Documentation](docs/API.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Game Mechanics](docs/GAME_MECHANICS.md)
-
-## Tech Stack
-
-- Backend: Python 3.11, FastAPI, PostgreSQL, Redis, Kafka
-- Frontend: React 18, TypeScript, Three.js, Vite
-- AI: Ollama, LangGraph, Weaviate
-- DevOps: Docker, Kubernetes, NGINX, Prometheus, Grafana
 
