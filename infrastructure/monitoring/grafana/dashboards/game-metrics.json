@@ -1,0 +1,34 @@
+### File: infrastructure/monitoring/grafana/dashboards/game-metrics.json
+
+{
+  "dashboard": {
+    "title": "Astraeum Game Metrics",
+    "panels": [
+      {
+        "title": "Active Players",
+        "targets": [{"expr": "sum(player_sessions_active)"}],
+        "type": "graph"
+      },
+      {
+        "title": "API Response Time",
+        "targets": [{"expr": "histogram_quantile(0.95, http_request_duration_seconds)"}],
+        "type": "graph"
+      },
+      {
+        "title": "LLM Inference Latency",
+        "targets": [{"expr": "llm_inference_duration_seconds"}],
+        "type": "graph"
+      },
+      {
+        "title": "Oracle Agent Activity",
+        "targets": [{"expr": "agent_actions_total"}],
+        "type": "graph"
+      },
+      {
+        "title": "Database Connections",
+        "targets": [{"expr": "postgres_connections_active"}],
+        "type": "gauge"
+      }
+    ]
+  }
+}

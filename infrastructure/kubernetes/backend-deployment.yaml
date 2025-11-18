@@ -1,0 +1,35 @@
+### File: infrastructure/kubernetes/backend-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astraeum-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: astraeum-backend
+  template:
+    metadata:
+      labels:
+        app: astraeum-backend
+    spec:
+      containers:
+      - name: backend
+        image: your-registry.com/astraeum-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: POSTGRES_HOST
+          value: postgres-service
+        - name: REDIS_HOST
+          value: redis-service
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-service:9092
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"

@@ -1,0 +1,23 @@
+### File: infrastructure/monitoring/alerting.yml
+
+groups:
+  - name: astraeum_alerts
+    interval: 30s
+    rules:
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, http_request_duration_seconds) > 2
+        for: 5m
+        annotations:
+          summary: "High API latency detected"
+          
+      - alert: LowDatabaseConnections
+        expr: postgres_connections_available < 5
+        for: 2m
+        annotations:
+          summary: "Database connection pool exhausted"
+          
+      - alert: AgentFailure
+        expr: agent_errors_total > 10
+        for: 5m
+        annotations:
+          summary: "Multiple agent failures detected"
