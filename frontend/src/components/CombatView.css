@@ -1,0 +1,144 @@
+### File: frontend/src/components/CombatView.css
+
+/* frontend/src/components/CombatView.css */
+.combat-view {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 40px;
+  background: rgba(15, 12, 41, 0.9);
+  border: 2px solid rgba(255, 0, 0, 0.3);
+  border-radius: 15px;
+}
+
+.combat-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.combat-header h3 {
+  font-size: 28px;
+  color: #ff6b6b;
+  margin-bottom: 10px;
+}
+
+.combat-arena {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  padding: 30px;
+  background: rgba(48, 43, 99, 0.3);
+  border-radius: 10px;
+}
+
+.combatant {
+  flex: 1;
+  text-align: center;
+}
+
+.combatant h4 {
+  font-size: 20px;
+  color: #ffd700;
+  margin-bottom: 15px;
+}
+
+.health-bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+}
+
+.health-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.health-fill.player {
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.health-fill.enemy {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.health-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.combat-vs {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.battle-log {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.battle-log h4 {
+  font-size: 18px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.battle-log p {
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-left: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.combat-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.action-select {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  background: rgba(48, 43, 99, 0.8);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.action-btn {
+  padding: 15px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ff6b6b, #ff4444);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.combat-loading {
+  text-align: center;
+  padding: 100px;
+  font-size: 24px;
+  color: #ffd700;
+}

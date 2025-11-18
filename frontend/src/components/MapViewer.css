@@ -1,0 +1,94 @@
+### File: frontend/src/components/MapViewer.css
+
+/* frontend/src/components/MapViewer.css */
+.map-viewer {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.dominion-list {
+  position: relative;
+  z-index: 10;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dominion-list h2 {
+  text-align: center;
+  font-size: 28px;
+  color: #ffd700;
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.oracle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.oracle-card {
+  background: rgba(15, 12, 41, 0.9);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 15px;
+  padding: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.oracle-card:hover:not(.defeated) {
+  transform: translateY(-5px);
+  border-color: #ffd700;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+}
+
+.oracle-card.defeated {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(100, 100, 100, 0.3);
+}
+
+.oracle-card.hostile {
+  border-color: rgba(255, 0, 0, 0.5);
+}
+
+.oracle-card h3 {
+  font-size: 22px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.oracle-domain {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.oracle-status {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.oracle-card.defeated .oracle-status {
+  background: rgba(100, 100, 100, 0.3);
+  color: #888;
+}
+
+.oracle-card.hostile .oracle-status {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+}
