@@ -1,0 +1,57 @@
+### File: backend/configs/game/army_units.yaml
+
+# Army Unit Definitions
+units:
+  - name: "Novice Soldiers"
+    type: "infantry"
+    description: "Basic starting troops"
+    stats:
+      attack: 10
+      defense: 10
+      health: 100
+      speed: 5
+    cost: 0
+    rarity: "common"
+    
+  - name: "Temporal Guards"
+    type: "special"
+    description: "Time-manipulating warriors from Chronos"
+    stats:
+      attack: 20
+      defense: 15
+      health: 120
+      speed: 7
+    element: "time"
+    special_abilities:
+      - "Can rewind one combat turn"
+    cost: 200
+    rarity: "rare"
+    
+  - name: "Shadow Stalkers"
+    type: "assassin"
+    description: "Stealth units from Nyx"
+    stats:
+      attack: 25
+      defense: 8
+      health: 80
+      speed: 10
+    element: "shadow"
+    special_abilities:
+      - "First strike"
+      - "Evasion 30%"
+    cost: 250
+    rarity: "rare"
+    
+  - name: "Frost Hoplites"
+    type: "infantry"
+    description: "Ice warriors from Boreas"
+    stats:
+      attack: 18
+      defense: 20
+      health: 150
+      speed: 4
+    element: "ice"
+    special_abilities:
+      - "Freeze enemies (slow them)"
+    cost: 220
+    rarity: "rare"

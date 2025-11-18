@@ -1,0 +1,13 @@
+### File: backend/configs/agents/helios.yaml
+
+name: "Helios"
+domain: "Solar Fire"
+title: "Oracle of the Sun"
+personality:
+  cunning: 5
+  deception: 3
+  honor: 8
+  wisdom: 7
+rewards:
+  army_unit: "Sun-forged Archers"
+  weapon: "Solar Spear"

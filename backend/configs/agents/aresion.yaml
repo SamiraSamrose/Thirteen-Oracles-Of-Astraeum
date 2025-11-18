@@ -1,0 +1,14 @@
+### File: backend/configs/agents/aresion.yaml
+
+name: "Aresion"
+domain: "War and Conflict"
+title: "Oracle of War"
+personality:
+  cunning: 6
+  deception: 4
+  honor: 7
+  wisdom: 5
+  aggression: 10
+rewards:
+  army_unit: "Elite Spartan Phalanx"
+  weapon: "War Spear of Ares"

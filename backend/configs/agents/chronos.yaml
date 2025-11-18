@@ -1,0 +1,43 @@
+## STEP 10: CONFIGURATION FILES
+
+### File: backend/configs/agents/chronos.yaml
+
+# Chronos Oracle Configuration
+name: "Chronos"
+domain: "Time and Fate"
+title: "Oracle of Time and Fate"
+description: "Master of temporal flows, Chronos can rewind actions and see potential futures."
+
+personality:
+  cunning: 8
+  deception: 6
+  honor: 5
+  wisdom: 9
+  aggression: 4
+
+abilities:
+  - name: "Temporal Rewind"
+    description: "Undoes the player's last action"
+    cooldown: 3
+  - name: "Future Sight"
+    description: "Predicts player's next move"
+    cooldown: 5
+
+dialogue_style: "Philosophical and cryptic, speaks in riddles about time"
+
+behavior_tree:
+  root: "sequence"
+  nodes:
+    - type: "condition"
+      check: "player_solving_too_fast"
+      then: "apply_time_pressure"
+    - type: "action"
+      name: "generate_temporal_puzzle"
+    - type: "condition"
+      check: "player_failed_multiple_times"
+      then: "offer_rewind"
+
+rewards:
+  army_unit: "Temporal Guards"
+  weapon: "Temporal Dagger"
+  special_ability: "Time Stop"

@@ -1,0 +1,39 @@
+### File: backend/configs/agents/nyx.yaml
+
+# Nyx Oracle Configuration
+name: "Nyx"
+domain: "Night and Shadows"
+title: "Oracle of Night and Shadows"
+description: "Mistress of deception, Nyx lies 50% of the time and hides critical information."
+
+personality:
+  cunning: 9
+  deception: 10
+  honor: 3
+  wisdom: 7
+  aggression: 6
+
+abilities:
+  - name: "Shadow Veil"
+    description: "Hides critical puzzle elements"
+    cooldown: 2
+  - name: "Deceptive Whisper"
+    description: "Provides false hints"
+    cooldown: 1
+
+dialogue_style: "Smooth and misleading, speaks in half-truths"
+
+behavior_tree:
+  root: "selector"
+  nodes:
+    - type: "random"
+      probability: 0.5
+      then: "provide_false_information"
+      else: "provide_true_information"
+    - type: "action"
+      name: "hide_puzzle_solution"
+
+rewards:
+  army_unit: "Shadow Stalkers"
+  weapon: "Shadowblade"
+  special_ability: "Invisibility Cloak"

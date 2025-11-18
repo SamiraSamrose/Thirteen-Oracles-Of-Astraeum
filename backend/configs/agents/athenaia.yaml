@@ -1,0 +1,161 @@
+# FILE 4: backend/configs/agents/athenaia.yaml
+# STEP: Athenaia Oracle Configuration
+# Wisdom and Strategy oracle personality and behavior definition.
+
+name: "Athenaia"
+domain: "Wisdom and Strategy"
+title: "Oracle of Wisdom and Strategy"
+description: "Chess-engine strategist who increases puzzle complexity dynamically based on player performance"
+
+personality:
+  cunning: 7
+  deception: 4
+  honor: 9
+  wisdom: 10
+  tactical_thinking: 10
+  adaptability: 8
+
+abilities:
+  - name: "Strategic Foresight"
+    description: "Predicts player moves 3 turns ahead using pattern analysis"
+    cooldown: 5
+    effectiveness: 0.85
+    
+  - name: "Tactical Analysis"
+    description: "Analyzes player weaknesses and adjusts puzzle complexity in real-time"
+    cooldown: 3
+    effectiveness: 0.9
+    
+  - name: "Pattern Recognition"
+    description: "Identifies player solving patterns and counters them"
+    cooldown: 2
+    effectiveness: 0.8
+    
+  - name: "Wisdom Buff"
+    description: "Grants tactical advantage to allied oracles"
+    cooldown: 10
+    effectiveness: 0.7
+
+dialogue_style: "Measured and analytical, speaks with logical precision and strategic insight"
+
+behavior_tree:
+  root: "sequence"
+  nodes:
+    - type: "condition"
+      check: "player_solving_too_fast"
+      then: "increase_complexity"
+      else: "maintain_difficulty"
+      
+    - type: "action"
+      name: "analyze_player_strategy"
+      
+    - type: "condition"
+      check: "player_using_repetitive_tactics"
+      then: "introduce_counter_mechanic"
+      
+    - type: "selector"
+      options:
+        - probability: 0.6
+          action: "generate_strategic_puzzle"
+        - probability: 0.3
+          action: "generate_tactical_challenge"
+        - probability: 0.1
+          action: "offer_strategic_alliance"
+
+puzzle_preferences:
+  types:
+    - "strategic_positioning"
+    - "resource_optimization"
+    - "tactical_chess_problems"
+    - "multi_step_planning"
+    
+  complexity_scaling:
+    easy: 1.0
+    normal: 1.3
+    hard: 1.6
+    adaptive: true
+    
+  features:
+    - "multi_solution_paths"
+    - "optimal_solution_bonus"
+    - "suboptimal_penalty"
+    - "time_pressure"
+
+combat_strategy:
+  style: "defensive_tactical"
+  troop_formation: "phalanx"
+  special_tactics:
+    - "flanking_maneuvers"
+    - "feint_attacks"
+    - "strategic_retreat"
+    - "resource_conservation"
+  
+  army_composition:
+    primary: "Tactician Commanders"
+    support: "Strategic Advisors"
+    special: "Chess Masters"
+
+diplomatic_approach:
+  initial_stance: "cautious_neutral"
+  alliance_threshold: 0.6
+  betrayal_likelihood: 0.1
+  negotiation_style: "logical_reasoning"
+  
+  preferred_allies:
+    - "Themis"
+    - "Helios"
+    
+  natural_enemies:
+    - "Typhon"
+    - "Proteus"
+
+learning_parameters:
+  memory_retention: 0.9
+  pattern_recognition_speed: "fast"
+  adaptation_rate: 0.8
+  strategic_depth: 5
+  
+  player_analysis:
+    - "solve_time_tracking"
+    - "strategy_classification"
+    - "weakness_identification"
+    - "strength_mapping"
+
+rewards:
+  army_unit: "Tactician Commanders"
+  weapon: "Aegis of Wisdom"
+  special_ability: "Strategic Foresight"
+  insight_tokens: 3
+  gold_bonus: 600
+
+difficulty_modifiers:
+  puzzle_complexity_multiplier: 1.5
+  solution_validation_strictness: "high"
+  hint_quality: "precise"
+  time_limit_reduction: 0.8
+
+special_mechanics:
+  - name: "Adaptive Difficulty"
+    description: "Increases puzzle complexity if player solves 3 consecutive puzzles quickly"
+    trigger: "rapid_solving_detected"
+    
+  - name: "Counter Strategy"
+    description: "Introduces puzzle elements that specifically counter player's preferred approach"
+    trigger: "pattern_identified"
+    
+  - name: "Strategic Guidance"
+    description: "Offers high-quality hints in exchange for future tactical disadvantage"
+    trigger: "player_struggling"
+
+lore:
+  backstory: "Once the chief strategist of united Astraeum, now tests players with centuries of accumulated tactical knowledge"
+  motivation: "Seeks worthy strategist to restore balance to fractured realm"
+  personality_notes: "Respects logical thinking and punishes reckless decisions. Views combat as chess game."
+  quote: "Strategy without tactics is the slowest route to victory. Tactics without strategy is the noise before defeat."
+
+meta:
+  unlock_order: 5
+  recommended_stage: 5
+  minimum_player_level: 4
+  estimated_completion_time: "45-60 minutes"
+  retry_difficulty_scaling: true

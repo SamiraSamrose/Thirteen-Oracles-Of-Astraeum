@@ -1,0 +1,13 @@
+### File: backend/configs/agents/selene.yaml
+
+name: "Selene"
+domain: "Moon and Dreams"
+title: "Oracle of the Moon"
+personality:
+  cunning: 8
+  deception: 7
+  honor: 6
+  wisdom: 8
+rewards:
+  army_unit: "Lunar Phantoms"
+  weapon: "Moonblade"

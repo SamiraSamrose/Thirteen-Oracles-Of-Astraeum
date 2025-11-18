@@ -1,0 +1,13 @@
+### File: backend/configs/agents/echo.yaml
+
+name: "Echo"
+domain: "Sound and Voice"
+title: "Oracle of Resonance"
+personality:
+  cunning: 7
+  deception: 8
+  honor: 5
+  wisdom: 6
+rewards:
+  army_unit: "Sonic Warriors"
+  weapon: "Echo Harp"

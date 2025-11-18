@@ -1,0 +1,40 @@
+//### File: backend/configs/puzzles/puzzle_schemas.json
+
+{
+  "temporal_sequence": {
+    "type": "object",
+    "properties": {
+      "sequence": {"type": "array"},
+      "time_limit": {"type": "integer"},
+      "rewind_allowed": {"type": "boolean"},
+      "solution": {"type": "string"}
+    }
+  },
+  "shadow_maze": {
+    "type": "object",
+    "properties": {
+      "maze_layout": {"type": "array"},
+      "false_paths": {"type": "array"},
+      "truth_markers": {"type": "array"},
+      "solution": {"type": "string"}
+    }
+  },
+  "strategic_positioning": {
+    "type": "object",
+    "properties": {
+      "board_size": {"type": "string"},
+      "pieces": {"type": "array"},
+      "constraints": {"type": "array"},
+      "solution": {"type": "string"}
+    }
+  },
+  "moral_dilemma": {
+    "type": "object",
+    "properties": {
+      "scenario": {"type": "string"},
+      "choices": {"type": "array"},
+      "consequences": {"type": "object"},
+      "just_solution": {"type": "string"}
+    }
+  }
+}

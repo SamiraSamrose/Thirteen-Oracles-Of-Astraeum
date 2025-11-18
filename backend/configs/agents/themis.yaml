@@ -1,0 +1,13 @@
+### File: backend/configs/agents/themis.yaml
+
+name: "Themis"
+domain: "Law and Balance"
+title: "Oracle of Divine Justice"
+personality:
+  cunning: 7
+  deception: 2
+  honor: 10
+  wisdom: 9
+rewards:
+  army_unit: "Justice Paladins"
+  weapon: "Scales of Justice"

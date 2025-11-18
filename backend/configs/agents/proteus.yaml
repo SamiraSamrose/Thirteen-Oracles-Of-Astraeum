@@ -1,0 +1,38 @@
+## ORACLE CONFIGURATIONS
+
+### File: backend/configs/agents/proteus.yaml
+
+name: "Proteus"
+domain: "Illusion and Transformation"
+title: "Oracle of Illusion"
+description: "Shape-shifter who changes puzzle rules unexpectedly"
+
+personality:
+  cunning: 8
+  deception: 9
+  honor: 4
+  wisdom: 6
+
+abilities:
+  - name: "Reality Warp"
+    description: "Changes puzzle mechanics mid-solve"
+    cooldown: 2
+  - name: "Shape Shift"
+    description: "Transforms battlefield layout"
+    cooldown: 4
+
+dialogue_style: "Cryptic and ever-changing, speaks in riddles"
+
+behavior_tree:
+  root: "selector"
+  nodes:
+    - type: "random"
+      probability: 0.7
+      then: "apply_rule_change"
+    - type: "action"
+      name: "morph_puzzle_structure"
+
+rewards:
+  army_unit: "Illusionary Doppels"
+  weapon: "Mirror Shield"
+  special_ability: "Reality Warp"

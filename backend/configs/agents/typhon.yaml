@@ -1,0 +1,14 @@
+### File: backend/configs/agents/typhon.yaml
+
+name: "Typhon"
+domain: "Chaos and Destruction"
+title: "Oracle of Chaos - The Final Trial"
+personality:
+  cunning: 10
+  deception: 10
+  honor: 1
+  wisdom: 8
+  chaos: 10
+rewards:
+  army_unit: "Chaos Titans"
+  weapon: "Staff of Entropy"

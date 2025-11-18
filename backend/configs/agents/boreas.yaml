@@ -1,0 +1,13 @@
+### File: backend/configs/agents/boreas.yaml
+
+name: "Boreas"
+domain: "Winter Storms"
+title: "Oracle of the North Wind"
+personality:
+  cunning: 6
+  deception: 5
+  honor: 6
+  wisdom: 7
+rewards:
+  army_unit: "Frost Hoplites"
+  weapon: "Icebound Hammer"

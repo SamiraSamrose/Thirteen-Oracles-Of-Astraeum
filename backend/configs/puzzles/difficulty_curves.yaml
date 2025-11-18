@@ -1,0 +1,20 @@
+### File: backend/configs/puzzles/difficulty_curves.yaml
+
+difficulty_curves:
+  time_limit:
+    1: 300
+    5: 180
+    10: 90
+    13: 60
+  
+  complexity:
+    1: "basic"
+    5: "intermediate"
+    10: "advanced"
+    13: "expert"
+  
+  enemy_strength:
+    1: 1.0
+    5: 1.5
+    10: 2.5
+    13: 4.0

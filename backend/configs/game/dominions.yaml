@@ -1,0 +1,30 @@
+### File: backend/configs/game/dominions.yaml
+
+dominions:
+  - name: "Chronos Domain"
+    oracle: "Chronos"
+    theme: "Time"
+    resources:
+      insight_bonus: 1
+      time_crystals: 3
+    
+  - name: "Shadow Realm of Nyx"
+    oracle: "Nyx"
+    theme: "Darkness"
+    resources:
+      stealth_bonus: 2
+      shadow_essence: 2
+    
+  - name: "Proteus Mirage"
+    oracle: "Proteus"
+    theme: "Illusion"
+    resources:
+      deception_bonus: 1
+      mirror_shards: 3
+    
+  - name: "Typhon's Chaos Abyss"
+    oracle: "Typhon"
+    theme: "Chaos"
+    resources:
+      all_bonuses: 1
+      entropy_core: 1

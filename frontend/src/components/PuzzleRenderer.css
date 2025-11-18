@@ -1,0 +1,104 @@
+### File: frontend/src/components/PuzzleRenderer.css
+
+/* frontend/src/components/PuzzleRenderer.css */
+.puzzle-renderer {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 40px;
+  background: rgba(15, 12, 41, 0.9);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 15px;
+}
+
+.puzzle-renderer h3 {
+  font-size: 28px;
+  color: #ffd700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.puzzle-description {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(48, 43, 99, 0.5);
+  border-radius: 10px;
+}
+
+.puzzle-description p {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.puzzle-input-area {
+  margin-bottom: 20px;
+}
+
+.puzzle-input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  background: rgba(48, 43, 99, 0.5);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  color: #fff;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.puzzle-input:focus {
+  outline: none;
+  border-color: #ffd700;
+}
+
+.puzzle-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.submit-btn,
+.hint-btn {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #0f0c29;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hint-btn {
+  background: rgba(48, 43, 99, 0.8);
+  color: #ffd700;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.hint-btn:hover {
+  border-color: #ffd700;
+}
+
+.puzzle-hint {
+  padding: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border-left: 4px solid #ffd700;
+  border-radius: 5px;
+  font-style: italic;
+  color: #ffed4e;
+}

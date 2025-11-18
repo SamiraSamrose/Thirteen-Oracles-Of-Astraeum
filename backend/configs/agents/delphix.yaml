@@ -1,0 +1,13 @@
+### File: backend/configs/agents/delphix.yaml
+
+name: "DelphiX"
+domain: "Prophecy and AI"
+title: "Oracle of Prophecy"
+personality:
+  cunning: 9
+  deception: 6
+  honor: 5
+  wisdom: 10
+rewards:
+  army_unit: "Prophetic Seers"
+  weapon: "Orb of Foresight"

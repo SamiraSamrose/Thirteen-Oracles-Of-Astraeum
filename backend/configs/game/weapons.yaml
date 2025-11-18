@@ -1,0 +1,31 @@
+### File: backend/configs/game/weapons.yaml
+
+weapons:
+  - name: "Mortal Spear"
+    type: "starting"
+    attack_bonus: 5
+    special: null
+    
+  - name: "Temporal Dagger"
+    type: "legendary"
+    attack_bonus: 15
+    special: "Undo one battle mistake"
+    oracle: "Chronos"
+    
+  - name: "Shadowblade"
+    type: "legendary"
+    attack_bonus: 20
+    special: "First strike in battle"
+    oracle: "Nyx"
+    
+  - name: "Solar Spear"
+    type: "legendary"
+    attack_bonus: 25
+    special: "Pierces magical defenses"
+    oracle: "Helios"
+    
+  - name: "Staff of Entropy"
+    type: "ultimate"
+    attack_bonus: 50
+    special: "Chaos damage ignores armor"
+    oracle: "Typhon"

@@ -1,0 +1,13 @@
+### File: backend/configs/agents/gaia.yaml
+
+name: "Gaia"
+domain: "Earth and Growth"
+title: "Oracle of the Living Earth"
+personality:
+  cunning: 5
+  deception: 4
+  honor: 8
+  wisdom: 8
+rewards:
+  army_unit: "Stoneborn Cyclopes"
+  weapon: "Earthshaker Staff"

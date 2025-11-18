@@ -1,0 +1,45 @@
+## FRONTEND REMAINING FILES
+
+### File: frontend/src/components/OracleInterface.css
+
+/* frontend/src/components/OracleInterface.css */
+.oracle-interface {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(15, 12, 41, 0.95), rgba(48, 43, 99, 0.95));
+}
+
+.oracle-header {
+  padding: 30px;
+  text-align: center;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.oracle-header h2 {
+  font-size: 32px;
+  color: #ffd700;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.oracle-header p {
+  font-size: 18px;
+  color: #ccc;
+  font-style: italic;
+}
+
+.oracle-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.confrontation {
+  text-align: center;
+  padding: 100px 40px;
+  font-size: 24px;
+  color: #ffd700;
+}
